@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spellbook — The Wizard's Network</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lora:ital,wght@0,400;0,500;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    :root{--gold:#c9a84c;--gold-dark:#8b6914;--parchment:#f5e6c8;--parchment-dark:#e8d5a3;--ink:#1a0a00;--crimson:#8b0000;--emerald:#0d4f3c;--bg-dark:#0d0a05;--bg-card:#1a1208;--bg-card2:#221a08;--border:#3d2c0a;--muted:#8a7550;--amber:#b45309}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Lora',Georgia,serif;background:var(--bg-dark);color:var(--parchment);min-height:100vh;background-image:radial-gradient(ellipse at 20% 50%,rgba(139,0,0,.05) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(13,79,60,.05) 0%,transparent 50%)}
+    .font-cinzel{font-family:'Cinzel',serif}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg-dark)}::-webkit-scrollbar-thumb{background:var(--gold-dark);border-radius:3px}
+    .card{background:linear-gradient(135deg,var(--bg-card) 0%,var(--bg-card2) 100%);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+    .card-hover{transition:all .2s ease}.card-hover:hover{border-color:var(--gold-dark);box-shadow:0 6px 30px rgba(0,0,0,.6),0 0 15px rgba(201,168,76,.1)}
+    .btn-gold{background:linear-gradient(135deg,var(--gold-dark) 0%,var(--gold) 50%,var(--gold-dark) 100%);color:var(--ink);font-family:'Cinzel',serif;font-weight:600;letter-spacing:.05em;border:none;cursor:pointer;transition:all .2s;padding:.55rem 1.4rem;border-radius:4px;font-size:.85rem}
+    .btn-gold:hover{filter:brightness(1.15);transform:translateY(-1px);box-shadow:0 4px 15px rgba(201,168,76,.4)}
+    .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s;padding:.5rem 1.2rem;border-radius:4px;font-family:'Lora',serif;font-size:.85rem}
+    .btn-ghost:hover{border-color:var(--gold-dark);color:var(--gold)}
+    .input-magic{background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--parchment);border-radius:4px;padding:.6rem 1rem;width:100%;font-family:'Lora',serif;transition:border-color .2s;outline:none;font-size:.9rem}
+    .input-magic:focus{border-color:var(--gold-dark);box-shadow:0 0 10px rgba(201,168,76,.2)}.input-magic::placeholder{color:var(--muted)}
+    .divider{height:1px;background:linear-gradient(to right,transparent,var(--border),transparent);margin:.75rem 0}
+    .house-gryffindor{background:linear-gradient(135deg,#7f0000,#b22222);border:1px solid #ffd700;color:#ffd700}
+    .house-slytherin{background:linear-gradient(135deg,#0a3f1f,#1a6b3a);border:1px solid #aaa9ad;color:#aaa9ad}
+    .house-ravenclaw{background:linear-gradient(135deg,#0e1b5c,#1a2d8f);border:1px solid #c0a860;color:#c0a860}
+    .house-hufflepuff{background:linear-gradient(135deg,#5c4500,#9c7800);border:1px solid #222;color:#111}
+    .house-badge{display:inline-block;padding:2px 8px;border-radius:3px;font-family:'Cinzel',serif;font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+    @keyframes charm-pulse{0%{transform:scale(1)}50%{transform:scale(1.35)}100%{transform:scale(1)}}.charm-animate{animation:charm-pulse .3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}.fade-in{animation:fadeIn .3s ease forwards}
+    @keyframes spin{to{transform:rotate(360deg)}}.spinner{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+    .nav-link{display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;border-radius:6px;color:var(--parchment);transition:all .2s;font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.05em;cursor:pointer}
+    .nav-link:hover{background:rgba(201,168,76,.1);color:var(--gold)}.nav-link.active{color:var(--gold);background:rgba(201,168,76,.12)}
+    textarea{resize:none}
+    .avatar{width:42px;height:42px;border-radius:50%;border:2px solid var(--border);background:var(--bg-card2);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-weight:700;color:var(--gold);font-size:1rem;flex-shrink:0;overflow:hidden}
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(4px);z-index:999;display:flex;align-items:center;justify-content:center;padding:1rem}
+    .modal-box{width:100%;max-width:520px;background:var(--bg-card);border:1px solid var(--gold-dark);border-radius:10px;box-shadow:0 0 60px rgba(201,168,76,.15);padding:2rem;animation:fadeIn .2s ease;max-height:90vh;overflow-y:auto}
+    .action-btn{display:flex;align-items:center;gap:.35rem;font-size:.78rem;background:transparent;border:none;cursor:pointer;transition:all .2s;padding:.3rem .5rem;border-radius:4px}
+    .action-btn:hover{background:rgba(201,168,76,.08)}
+    .char-bar{height:3px;border-radius:2px;background:var(--gold-dark);transition:width .1s,background .2s}
+    #notification{position:fixed;top:1rem;right:1rem;z-index:9999;min-width:260px;max-width:340px}
+    .space-y-3>*+*{margin-top:.75rem}.space-y-4>*+*{margin-top:1rem}
+    .w-full{width:100%}.flex{display:flex}.flex-1{flex:1}.flex-wrap{flex-wrap:wrap}
+    .items-center{align-items:center}.items-start{align-items:flex-start}
+    .justify-between{justify-content:space-between}.justify-center{justify-content:center}
+    .gap-2{gap:.5rem}.gap-3{gap:.75rem}.min-w-0{min-width:0}
+    .p-3{padding:.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}
+    .mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mt-2{margin-top:.5rem}.mt-auto{margin-top:auto}
+    .text-center{text-align:center}.relative{position:relative}.absolute{position:absolute}
+    #mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(13,10,5,.97);border-top:1px solid var(--border);z-index:100;padding:.5rem 0}
+    @media(max-width:900px){#sidebar{display:none}#right-panel{display:none}#mobile-nav{display:flex}body{padding-bottom:60px}}
+
+    /* ══════════════════════════════════════
+       MAGICAL BACKGROUND ANIMATIONS
+    ══════════════════════════════════════ */
+    @keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.7;transform:scale(1.4)}}
+    @keyframes orbFloat{0%,100%{transform:translateY(0) scale(1);opacity:.07}50%{transform:translateY(-40px) scale(1.1);opacity:.14}}
+
+    /* Owl flies left to right */
+    @keyframes owlFly{
+      0%  {transform:translateX(-140px) translateY(0);opacity:0}
+      5%  {opacity:1}
+      40% {transform:translateX(40vw) translateY(-60px);opacity:1}
+      60% {transform:translateX(60vw) translateY(-70px);opacity:1}
+      95% {transform:translateX(110vw) translateY(-15px);opacity:1}
+      100%{transform:translateX(110vw) translateY(-15px);opacity:0}
+    }
+    /* Broom flies right to left */
+    @keyframes broomFly{
+      0%  {transform:translateX(110vw) translateY(0) rotate(-8deg);opacity:0}
+      5%  {opacity:1}
+      40% {transform:translateX(60vw) translateY(-35px) rotate(-10deg);opacity:1}
+      60% {transform:translateX(40vw) translateY(-25px) rotate(-8deg);opacity:1}
+      95% {transform:translateX(-220px) translateY(8px) rotate(-6deg);opacity:1}
+      100%{transform:translateX(-220px) translateY(8px) rotate(-6deg);opacity:0}
+    }
+    /* Snitch zigzag float */
+    @keyframes snitchFly{
+      0%  {transform:translate(0,0) rotate(0deg);opacity:0}
+      8%  {opacity:1}
+      25% {transform:translate(50px,-65px) rotate(20deg)}
+      45% {transform:translate(-30px,-120px) rotate(-15deg)}
+      65% {transform:translate(80px,-90px) rotate(30deg)}
+      85% {transform:translate(20px,-160px) rotate(-10deg)}
+      93% {opacity:.8}
+      100%{transform:translate(100px,-200px) rotate(40deg);opacity:0}
+    }
+    /* Sparkles rise from bottom */
+    @keyframes sparkleFloat{
+      0%  {transform:translateY(0) rotate(0);opacity:0}
+      10% {opacity:.8}
+      90% {opacity:.3}
+      100%{transform:translateY(-90vh) rotate(540deg);opacity:0}
+    }
+    /* Lightning flicker */
+    @keyframes boltFlicker{
+      0%,100%{opacity:0}
+      3%{opacity:.9}7%{opacity:.2}11%{opacity:1}15%{opacity:0}
+    }
+
+    /* Landing page keyframes */
+    @keyframes glowPulse{
+      0%,100%{filter:drop-shadow(0 0 8px rgba(201,168,76,.3))}
+      50%{filter:drop-shadow(0 0 20px rgba(201,168,76,.8)) drop-shadow(0 0 40px rgba(201,168,76,.3))}
+    }
+    @keyframes landingBounce{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-12px)}
+    }
+    @keyframes snitchOrbit{
+      0%  {transform:rotate(0deg) translateX(95px) rotate(0deg)}
+      100%{transform:rotate(360deg) translateX(95px) rotate(-360deg)}
+    }
+    @keyframes landingFadeUp{
+      0%  {opacity:0;transform:translateY(25px)}
+      100%{opacity:1;transform:translateY(0)}
+    }
+    @keyframes broomBounce{
+      0%,100%{transform:translateY(0) rotate(0deg)}
+      33%{transform:translateY(-8px) rotate(-3deg)}
+      66%{transform:translateY(-5px) rotate(2deg)}
+    }
+
+    /* Magic layer */
+    #magic-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .magic-star{position:absolute;color:var(--gold);font-size:10px;animation:twinkle var(--dur,3s) ease-in-out infinite;animation-delay:var(--delay,0s)}
+    .magic-orb{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.35) 0%,transparent 70%);animation:orbFloat var(--dur,8s) ease-in-out infinite;animation-delay:var(--delay,0s)}
+    .magic-owl{position:absolute;animation:owlFly var(--dur,22s) ease-in-out infinite;animation-delay:var(--delay,0s);z-index:2}
+    .magic-broom{position:absolute;animation:broomFly var(--dur,26s) ease-in-out infinite;animation-delay:var(--delay,0s);z-index:2}
+    .magic-snitch{position:absolute;animation:snitchFly var(--dur,15s) ease-in-out infinite;animation-delay:var(--delay,0s);z-index:2}
+    .magic-sparkle{position:absolute;font-size:13px;animation:sparkleFloat var(--dur,9s) linear infinite;animation-delay:var(--delay,0s);color:var(--gold)}
+    .magic-bolt{position:absolute;color:var(--gold);animation:boltFlicker var(--dur,7s) ease-in-out infinite;animation-delay:var(--delay,0s);font-size:18px}
+
+    /* Make content above magic layer */
+    div[style*="max-width:1152px"]{position:relative;z-index:1}
+    #notification,.modal-bg,#mobile-nav{position:relative;z-index:100}
+
+    /* Landing classes */
+    .landing-owl  {display:inline-block;animation:landingBounce 2.8s ease-in-out infinite}
+    .landing-broom{display:inline-block;animation:broomBounce 3.2s ease-in-out .4s infinite}
+    .landing-snitch{animation:glowPulse 2s ease-in-out infinite}
+    .landing-title{animation:landingFadeUp .8s ease .5s both,glowPulse 3s ease-in-out 1.5s infinite}
+    .landing-sub  {animation:landingFadeUp .8s ease .9s both}
+    .landing-btn  {animation:landingFadeUp .8s ease 1.3s both}
+    .snitch-orbit{position:absolute;width:190px;height:190px;animation:snitchOrbit 5s linear infinite;top:50%;left:50%;margin-top:-95px;margin-left:-95px;pointer-events:none}
+  </style>
+</head>
+<body>
+<div id="notification"></div>
+
+<!-- ══ MAGICAL BACKGROUND LAYER ══════════════════════ -->
+<div id="magic-layer" aria-hidden="true">
+
+  <!-- Twinkling stars -->
+  <div class="magic-star" style="top:7%;left:11%;--dur:2.5s;--delay:0s">✦</div>
+  <div class="magic-star" style="top:14%;left:77%;--dur:3.5s;--delay:.8s">✧</div>
+  <div class="magic-star" style="top:28%;left:34%;--dur:2s;--delay:1.5s">✦</div>
+  <div class="magic-star" style="top:42%;left:89%;--dur:4s;--delay:.3s">✧</div>
+  <div class="magic-star" style="top:56%;left:4%;--dur:3s;--delay:2s">✦</div>
+  <div class="magic-star" style="top:67%;left:54%;--dur:2.8s;--delay:1.1s">✧</div>
+  <div class="magic-star" style="top:76%;left:23%;--dur:3.2s;--delay:.5s">✦</div>
+  <div class="magic-star" style="top:88%;left:68%;--dur:2.2s;--delay:1.8s">✧</div>
+  <div class="magic-star" style="top:4%;left:49%;--dur:3.8s;--delay:.2s">✦</div>
+  <div class="magic-star" style="top:91%;left:38%;--dur:2.6s;--delay:2.5s">✧</div>
+  <div class="magic-star" style="top:33%;left:61%;--dur:3.1s;--delay:1.3s;font-size:7px">✦</div>
+  <div class="magic-star" style="top:72%;left:82%;--dur:2.9s;--delay:.7s;font-size:7px">✧</div>
+
+  <!-- Glowing orbs -->
+  <div class="magic-orb" style="width:220px;height:220px;top:8%;left:2%;--dur:10s;--delay:0s"></div>
+  <div class="magic-orb" style="width:160px;height:160px;top:58%;left:78%;--dur:12s;--delay:3s"></div>
+  <div class="magic-orb" style="width:100px;height:100px;top:82%;left:18%;--dur:8s;--delay:5s"></div>
+  <div class="magic-orb" style="width:130px;height:130px;top:35%;left:50%;--dur:14s;--delay:2s"></div>
+
+  <!-- SVG OWL 1 — top lane, large -->
+  <div class="magic-owl" style="top:8%;left:0;--dur:22s;--delay:2s">
+    <img src="/static/images/owl.svg" width="95" height="79" alt="owl"
+         style="filter:drop-shadow(0 0 8px rgba(201,168,76,.6))"/>
+  </div>
+
+  <!-- SVG OWL 2 — lower lane, smaller -->
+  <div class="magic-owl" style="top:60%;left:0;--dur:32s;--delay:16s;opacity:.7">
+    <img src="/static/images/owl.svg" width="65" height="54" alt="owl"
+         style="filter:drop-shadow(0 0 5px rgba(201,168,76,.4))"/>
+  </div>
+
+  <!-- SVG BROOM 1 — Nimbus 2000, upper lane (mirrored so it goes R→L) -->
+  <div class="magic-broom" style="top:20%;left:0;--dur:26s;--delay:6s">
+    <img src="/static/images/broom.svg" width="155" height="62" alt="Nimbus 2000"
+         style="filter:drop-shadow(0 0 8px rgba(201,168,76,.5));transform:scaleX(-1)"/>
+  </div>
+
+  <!-- SVG BROOM 2 — lower lane -->
+  <div class="magic-broom" style="top:70%;left:0;--dur:38s;--delay:22s;opacity:.6">
+    <img src="/static/images/broom.svg" width="110" height="44" alt="Nimbus 2000"
+         style="filter:drop-shadow(0 0 5px rgba(201,168,76,.4));transform:scaleX(-1)"/>
+  </div>
+
+  <!-- SVG SNITCH 1 -->
+  <div class="magic-snitch" style="top:30%;left:20%;--dur:15s;--delay:0s">
+    <img src="/static/images/snitch.svg" width="62" height="47" alt="Golden Snitch"
+         style="filter:drop-shadow(0 0 12px #ffd700)"/>
+  </div>
+
+  <!-- SVG SNITCH 2 — smaller -->
+  <div class="magic-snitch" style="top:65%;left:60%;--dur:19s;--delay:9s;opacity:.7">
+    <img src="/static/images/snitch.svg" width="44" height="33" alt="Golden Snitch"
+         style="filter:drop-shadow(0 0 8px #ffd700)"/>
+  </div>
+
+  <!-- SVG WAND — floating diagonally -->
+  <div class="magic-snitch" style="top:48%;left:8%;--dur:22s;--delay:5s;opacity:.45">
+    <img src="/static/images/wand.svg" width="95" height="24" alt="Magic Wand"
+         style="filter:drop-shadow(0 0 6px rgba(201,168,76,.7))"/>
+  </div>
+
+  <!-- Lightning bolts -->
+  <div class="magic-bolt" style="top:18%;left:33%;--dur:8s;--delay:1s">⚡</div>
+  <div class="magic-bolt" style="top:50%;left:72%;--dur:11s;--delay:4.5s">⚡</div>
+  <div class="magic-bolt" style="top:80%;left:45%;--dur:7s;--delay:9s">⚡</div>
+
+  <!-- Rising sparkles -->
+  <div class="magic-sparkle" style="bottom:0;left:7%;--dur:8s;--delay:0s">✨</div>
+  <div class="magic-sparkle" style="bottom:0;left:21%;--dur:10s;--delay:2s">✦</div>
+  <div class="magic-sparkle" style="bottom:0;left:39%;--dur:7s;--delay:4s">✨</div>
+  <div class="magic-sparkle" style="bottom:0;left:57%;--dur:9.5s;--delay:1.5s">✦</div>
+  <div class="magic-sparkle" style="bottom:0;left:74%;--dur:11s;--delay:3.5s">✨</div>
+  <div class="magic-sparkle" style="bottom:0;left:91%;--dur:8.5s;--delay:5.5s">✦</div>
+  <div class="magic-sparkle" style="bottom:0;left:14%;--dur:12s;--delay:7s;font-size:10px">✧</div>
+  <div class="magic-sparkle" style="bottom:0;left:50%;--dur:9s;--delay:6s;font-size:10px">✧</div>
+</div>
+
+<!-- AUTH MODAL -->
+<div id="auth-modal" class="modal-bg" style="display:none">
+  <div class="modal-box">
+    <div class="text-center mb-4">
+      <div class="font-cinzel" style="color:var(--gold);font-size:2rem;font-weight:900">⚡ Spellbook</div>
+      <div style="color:var(--muted);font-style:italic;font-size:.9rem">The Wizard's Social Network</div>
+    </div>
+    <div class="flex gap-2 mb-4">
+      <button onclick="showAuthTab('login')" id="tab-login" class="btn-gold flex-1">Login</button>
+      <button onclick="showAuthTab('signup')" id="tab-signup" class="btn-ghost flex-1">Sign Up</button>
+    </div>
+    <div id="login-form">
+      <div class="space-y-3">
+        <input id="login-username" class="input-magic" type="text" placeholder="Wizard name..."/>
+        <input id="login-password" class="input-magic" type="password" placeholder="Secret password..."/>
+        <button onclick="doLogin()" class="btn-gold w-full">Enter the Wizarding World</button>
+        <p class="text-center" style="font-size:.8rem;color:var(--muted)">New here? <a href="#" onclick="showAuthTab('signup')" style="color:var(--gold)">Create account</a></p>
+      </div>
+    </div>
+    <div id="signup-form" style="display:none">
+      <div class="space-y-3">
+        <input id="signup-username" class="input-magic" type="text" placeholder="Wizard name (letters, numbers, _)..."/>
+        <input id="signup-email" class="input-magic" type="email" placeholder="Email address..."/>
+        <input id="signup-password" class="input-magic" type="password" placeholder="Password (min 8 chars)..."/>
+        <input id="signup-display" class="input-magic" type="text" placeholder="Display name (optional)..."/>
+        <select id="signup-house" class="input-magic" style="background:#0d0a05">
+          <option value="">Choose your Hogwarts house...</option>
+          <option value="Gryffindor">🦁 Gryffindor</option>
+          <option value="Slytherin">🐍 Slytherin</option>
+          <option value="Ravenclaw">🦅 Ravenclaw</option>
+          <option value="Hufflepuff">🦡 Hufflepuff</option>
+        </select>
+        <button onclick="doSignup()" class="btn-gold w-full">Join the Order</button>
+        <p class="text-center" style="font-size:.8rem;color:var(--muted)">Already a wizard? <a href="#" onclick="showAuthTab('login')" style="color:var(--gold)">Login</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CAST MODAL -->
+<div id="cast-modal" class="modal-bg" style="display:none">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-cinzel" style="color:var(--gold);font-size:1.1rem;font-weight:700">✨ Cast a Spell</h3>
+      <button onclick="closeModal('cast-modal')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.5rem">&times;</button>
+    </div>
+    <div class="flex gap-3">
+      <div id="cast-avatar" class="avatar">?</div>
+      <div class="flex-1 min-w-0">
+        <textarea id="cast-content" class="input-magic w-full" rows="4" placeholder="What spell shall you cast?" maxlength="280" oninput="updateBar('cast-content','cast-bar','cast-count')"></textarea>
+        <div class="flex items-center justify-between mt-2 mb-2">
+          <span id="cast-count" style="color:var(--muted);font-size:.72rem">0/280</span>
+          <div style="flex:1;margin:0 .75rem"><div class="char-bar" id="cast-bar" style="width:0%"></div></div>
+        </div>
+        <div id="cast-img-preview" style="display:none;margin-bottom:.5rem;position:relative">
+          <img id="cast-preview-img" style="border-radius:8px;max-height:10rem;object-fit:cover;width:100%;border:1px solid var(--border)"/>
+          <button onclick="removeCastImg()" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:.75rem">Remove</button>
+        </div>
+        <div class="flex items-center justify-between">
+          <label class="btn-ghost" style="padding:.4rem .8rem;cursor:pointer;font-size:.8rem">📷 Image<input type="file" id="cast-image" accept="image/*" style="display:none" onchange="previewCastImg(this)"></label>
+          <button onclick="castSpell()" class="btn-gold">Wingardium Leviosa!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REPLY MODAL -->
+<div id="reply-modal" class="modal-bg" style="display:none">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-cinzel" style="color:var(--gold);font-weight:700">💬 Reply to Spell</h3>
+      <button onclick="closeModal('reply-modal')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.5rem">&times;</button>
+    </div>
+    <div id="reply-original" class="card p-3 mb-3" style="color:var(--muted);font-style:italic;font-size:.88rem"></div>
+    <textarea id="reply-content" class="input-magic w-full" rows="3" placeholder="Your reply..." maxlength="280" oninput="updateBar('reply-content','reply-bar','reply-count')"></textarea>
+    <div class="flex items-center justify-between mt-2">
+      <span id="reply-count" style="color:var(--muted);font-size:.72rem">0/280</span>
+      <div style="flex:1;margin:0 .75rem"><div class="char-bar" id="reply-bar" style="width:0%"></div></div>
+      <button onclick="submitReply()" class="btn-gold">Cast Reply</button>
+    </div>
+  </div>
+</div>
+
+<!-- ECHO MODAL -->
+<div id="echo-modal" class="modal-bg" style="display:none">
+  <div class="modal-box">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-cinzel" style="color:var(--gold);font-weight:700">🔮 Echo Spell</h3>
+      <button onclick="closeModal('echo-modal')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.5rem">&times;</button>
+    </div>
+    <div id="echo-original" class="card p-3 mb-3" style="color:var(--muted);font-style:italic;font-size:.88rem"></div>
+    <textarea id="echo-content" class="input-magic w-full" rows="3" placeholder="Add your thoughts..." maxlength="280" oninput="updateBar('echo-content','echo-bar','echo-count')"></textarea>
+    <div class="flex items-center justify-between mt-2">
+      <span id="echo-count" style="color:var(--muted);font-size:.72rem">0/280</span>
+      <div style="flex:1;margin:0 .75rem"><div class="char-bar" id="echo-bar" style="width:0%"></div></div>
+      <button onclick="submitEcho()" class="btn-gold">Cast Echo!</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOLLOW MODAL -->
+<div id="follow-modal" class="modal-bg" style="display:none">
+  <div class="modal-box" style="max-width:420px">
+    <div class="flex items-center justify-between mb-4">
+      <h3 id="follow-modal-title" class="font-cinzel" style="color:var(--gold);font-size:1.1rem;font-weight:700">Wizards</h3>
+      <button onclick="closeModal('follow-modal')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.5rem">&times;</button>
+    </div>
+    <div id="follow-modal-list" class="space-y-3" style="max-height:22rem;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- CHALLENGE MODAL -->
+<div id="challenge-modal" class="modal-bg" style="display:none">
+  <div class="modal-box" style="max-width:520px">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-cinzel" style="color:var(--gold);font-size:1.15rem;font-weight:700">⚔️ Issue Duel Challenge</h3>
+      <button onclick="closeModal('challenge-modal')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.6rem">&times;</button>
+    </div>
+    
+    <div id="challenge-spell-preview" class="card p-4 mb-4" style="font-style:italic;color:var(--parchment-dark)"></div>
+    
+    <div class="space-y-4">
+      <div>
+        <label class="font-cinzel block text-xs tracking-widest text-[var(--muted)] mb-2">DEBATE TOPIC</label>
+        <input id="challenge-topic" class="input-magic w-full" placeholder="Write the debate statement..."/>
+      </div>
+      <div>
+        <label class="font-cinzel block text-xs tracking-widest text-[var(--muted)] mb-2">CHALLENGE WIZARD</label>
+        <input id="challenge-defender" class="input-magic w-full" placeholder="@username"/>
+      </div>
+    </div>
+
+    <button onclick="submitChallenge()" class="btn-gold w-full mt-6 py-3">Send Duel Challenge ⚔️</button>
+  </div>
+</div>
+
+<!-- ACCEPT DUEL MODAL -->
+<div id="accept-modal" class="modal-bg" style="display:none">
+  <div class="modal-box" style="max-width:520px">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-cinzel" style="color:var(--gold);font-size:1.1rem;font-weight:700">⚔️ Accept Duel Challenge</h3>
+      <button onclick="closeModal('accept-modal')" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1.5rem">&times;</button>
+    </div>
+
+    <!-- Challenger's spell -->
+    <div style="margin-bottom:1.25rem">
+      <div class="font-cinzel" style="color:var(--muted);font-size:.7rem;letter-spacing:.1em;margin-bottom:.4rem">CHALLENGE TOPIC</div>
+      <div id="accept-topic" class="card p-3" style="font-size:.9rem;color:var(--gold);font-weight:600;font-family:Cinzel,serif"></div>
+    </div>
+    <div style="margin-bottom:1.25rem">
+      <div class="font-cinzel" style="color:var(--muted);font-size:.7rem;letter-spacing:.1em;margin-bottom:.4rem">CHALLENGER'S SPELL</div>
+      <div id="accept-challenger-spell" class="card p-3" style="font-size:.88rem;color:var(--parchment-dark);font-style:italic"></div>
+    </div>
+
+    <!-- User's spells to pick from -->
+    <div>
+      <div class="font-cinzel" style="color:var(--muted);font-size:.7rem;letter-spacing:.1em;margin-bottom:.5rem">📜 CHOOSE YOUR SPELL TO FIGHT WITH</div>
+      <!-- Cast new spell option -->
+<div style="margin-bottom:.75rem;padding:.75rem;border:2px dashed var(--gold-dark);border-radius:6px;background:rgba(201,168,76,.05)">
+  <div class="font-cinzel" style="color:var(--gold);font-size:.75rem;font-weight:700;margin-bottom:.4rem">✨ WRITE A NEW ARGUMENT</div>
+  <textarea id="duel-new-spell" class="input-magic w-full" rows="3" 
+    placeholder="Write your counter-argument here... (This will become your duel spell)"
+    maxlength="280"
+    oninput="updateBar('duel-new-spell','duel-spell-bar','duel-spell-count');selectNewSpellOption()"></textarea>
+  <div class="flex items-center justify-between mt-1">
+    <span id="duel-spell-count" style="color:var(--muted);font-size:.72rem">0/280</span>
+    <div style="flex:1;margin:0 .75rem"><div class="char-bar" id="duel-spell-bar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="font-cinzel" style="color:var(--muted);font-size:.7rem;letter-spacing:.1em;margin-bottom:.5rem">
+  — YA EXISTING SPELL CHOOSE KARO —
+</div>
+      <div id="accept-spells-list" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:.5rem">
+        <div style="text-align:center;padding:1rem"><div class="spinner" style="margin:0 auto"></div></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.5rem;margin-top:1.25rem">
+      <button onclick="submitAccept()" class="btn-gold flex-1" id="accept-submit-btn" disabled style="opacity:.5">Accept with Selected Spell ⚔️</button>
+      <button onclick="submitDecline()" class="btn-ghost" style="flex-shrink:0">Decline 🏳️</button>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div style="max-width:1152px;margin:0 auto;display:flex;min-height:100vh">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" style="width:240px;flex-shrink:0;padding:1rem;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:.5rem;overflow-y:auto;border-right:1px solid var(--border)">
+    <div style="padding:1rem .5rem .5rem">
+      <div class="font-cinzel" style="color:var(--gold);font-size:1.5rem;font-weight:900;cursor:pointer" onclick="navigate('home')">⚡ Spellbook</div>
+      <div style="color:var(--muted);font-size:.72rem;font-style:italic;margin-top:4px">The Wizard's Network</div>
+    </div>
+    <nav style="display:flex;flex-direction:column;gap:4px">
+      <div class="nav-link" id="nav-home"    onclick="navigate('home')">       <span>🏰</span> Great Hall</div>
+      <div class="nav-link" id="nav-explore" onclick="navigate('explore')">    <span>🔭</span> Explore</div>
+      <div class="nav-link" id="nav-search"  onclick="navigate('search','')">  <span>🔍</span> Search</div>
+      <div class="nav-link" id="nav-duels"   onclick="navigate('duels')">
+      <div class="nav-link" id="nav-notifications" onclick="navigate('notifications')" style="display:none">
+  <span>🔔</span> Notifications
+  <span id="notif-badge" style="display:none;background:var(--crimson);color:white;border-radius:50%;width:18px;height:18px;font-size:.65rem;margin-left:auto;align-items:center;justify-content:center;font-family:Cinzel,serif">0</span>
+</div>
+      
+        <span>⚔️</span> Spell Duels
+        <span id="pending-badge" style="display:none;background:var(--crimson);color:white;border-radius:50%;width:18px;height:18px;font-size:.65rem;margin-left:auto;align-items:center;justify-content:center">!</span>
+      </div>
+      <div class="nav-link" id="nav-profile"  onclick="navigate('profile')"  style="display:none"><span>👤</span> My Profile</div>
+      <div class="nav-link" id="nav-settings" onclick="navigate('settings')" style="display:none"><span>⚙</span> Settings</div>
+    </nav>
+    <div class="divider"></div>
+    <button onclick="openCastModal()" id="cast-btn" class="btn-gold w-full" style="padding:.75rem;display:none">✨ Cast a Spell</button>
+    <div class="mt-auto">
+      <div id="sidebar-user" style="display:none" class="card p-3">
+        <div class="flex items-center gap-2">
+          <div id="sidebar-avatar" class="avatar" style="width:36px;height:36px;font-size:.85rem">?</div>
+          <div class="min-w-0 flex-1">
+            <div id="sidebar-name" class="font-cinzel" style="color:var(--gold);font-size:.85rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+            <div id="sidebar-uname" style="color:var(--muted);font-size:.7rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
+          </div>
+        </div>
+        <button onclick="doLogout()" class="btn-ghost w-full mt-2" style="font-size:.75rem">Logout</button>
+      </div>
+      <div id="sidebar-login" class="card p-4 text-center">
+        <div class="font-cinzel" style="color:var(--gold);font-size:.85rem;font-weight:700;margin-bottom:4px">Join the Order</div>
+        <div style="color:var(--muted);font-size:.75rem;margin-bottom:.75rem;font-style:italic">Connect with wizards worldwide</div>
+        <button onclick="showAuth()" class="btn-gold w-full" style="font-size:.8rem">Enter Hogwarts</button>
+      </div>
+    </div>
+        
+    
+  </aside>
+
+  <!-- MAIN -->
+  <main style="flex:1;min-width:0">
+    <div style="position:sticky;top:0;z-index:10;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;background:rgba(13,10,5,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)">
+      <div class="font-cinzel" style="color:var(--gold);font-size:1.1rem;font-weight:700;cursor:pointer" onclick="navigate('home')">⚡ Spellbook</div>
+      <div class="flex gap-2 items-center">
+        <button onclick="showAuth()" id="header-login-btn" class="btn-gold" style="font-size:.75rem;padding:.35rem .9rem">Login</button>
+        <button onclick="openCastModal()" id="header-cast-btn" class="btn-gold" style="font-size:.75rem;padding:.35rem .9rem;display:none">✨ Cast</button>
+        <div id="header-avatar-wrap" style="display:none;cursor:pointer" onclick="navigate('profile')">
+          <div id="header-avatar" class="avatar" style="width:32px;height:32px;font-size:.75rem">?</div>
+        </div>
+      </div>
+    </div>
+    <div id="page-container" style="padding:1rem"></div>
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside id="right-panel" style="width:280px;flex-shrink:0;padding:1rem;position:sticky;top:0;height:100vh;overflow-y:auto;border-left:1px solid var(--border)">
+    <div style="margin-bottom:1rem;position:relative">
+      <input type="text" id="search-input" class="input-magic" style="font-size:.85rem" placeholder="🔍 Search wizards or spells..." oninput="debounceSearch(this.value)" onkeydown="if(event.key==='Enter'&&this.value.trim()){navigateSearch(this.value.trim())}"/>
+      <div id="search-results" class="card" style="display:none;position:absolute;width:100%;z-index:20;margin-top:4px;max-height:400px;overflow-y:auto"></div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="font-cinzel" style="color:var(--gold);font-size:.85rem;font-weight:700;margin-bottom:.75rem">🧙 Suggested Wizards</div>
+      <div id="suggested-list"><div style="color:var(--muted);font-size:.75rem;text-align:center;padding:.5rem">Loading...</div></div>
+    </div>
+    <div class="card p-4 mb-3">
+      <div class="font-cinzel" style="color:var(--gold);font-size:.85rem;font-weight:700;margin-bottom:.75rem">📊 Platform Stats</div>
+      <div id="stats-panel" style="color:var(--muted);font-size:.85rem">...</div>
+    </div>
+    <div class="card p-4">
+      <div class="font-cinzel" style="color:var(--gold);font-size:.85rem;font-weight:700;margin-bottom:.75rem">🏰 Hogwarts Houses</div>
+      <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.85rem">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span>🦁 Gryffindor</span><span class="house-badge house-gryffindor">Bold</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span>🐍 Slytherin</span><span class="house-badge house-slytherin">Cunning</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span>🦅 Ravenclaw</span><span class="house-badge house-ravenclaw">Wise</span></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span>🦡 Hufflepuff</span><span class="house-badge house-hufflepuff">Loyal</span></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- MOBILE NAV -->
+<nav id="mobile-nav" style="justify-content:space-around;align-items:center">
+  <button onclick="navigate('home')"    style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">🏰</span>Hall</button>
+  <button onclick="navigate('explore')" style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">🔭</span>Explore</button>
+  <button onclick="openCastModal()"    style="display:flex;flex-direction:column;align-items:center;color:var(--gold);background:none;border:none;cursor:pointer"><span style="font-size:1.8rem">✨</span></button>
+  <button onclick="navigate('duels')"  style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">⚔️</span>Duels</button>
+  <button id="mob-login-btn"   onclick="showAuth()"          style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">🔐</span>Login</button>
+  <button id="mob-profile-btn" onclick="navigate('profile')" style="display:none;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">👤</span>Me</button>
+</nav>
+
+
+<script>
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+let voteTargetDuelId = null;
+let voteTargetSide   = null;
+let isNewSpellMode = false;
+let acceptSelectedSpellId = null;
+let token=localStorage.getItem('sb_token');
+let currentUser=JSON.parse(localStorage.getItem('sb_user')||'null');
+let currentPage='';
+let replySpellId=null,echoSpellId=null,challengeSpellId=null,acceptDuelId=null;
+
+document.addEventListener('DOMContentLoaded',()=>{updateUI();navigate('home');loadSuggested();loadStats();});
+
+// ═══════════════════════════════════
+// AUTH
+// ═══════════════════════════════════
+function showAuth(){qs('#auth-modal').style.display='flex';showAuthTab('login');}
+function hideAuth(){qs('#auth-modal').style.display='none';}
+function showAuthTab(t){
+  qs('#login-form').style.display=t==='login'?'block':'none';
+  qs('#signup-form').style.display=t==='signup'?'block':'none';
+  qs('#tab-login').className=t==='login'?'btn-gold flex-1':'btn-ghost flex-1';
+  qs('#tab-signup').className=t==='signup'?'btn-gold flex-1':'btn-ghost flex-1';
+}
+
+function selectNewSpellOption() {
+  const content = qs('#duel-new-spell')?.value.trim();
+  if (!content) return;
+  
+  isNewSpellMode = true;
+  acceptSelectedSpellId = null;
+
+  // Deselect all existing spells
+  document.querySelectorAll('[id^="spell-option-"]').forEach(el => {
+    el.style.borderColor = 'var(--border)';
+    el.style.background  = 'rgba(0,0,0,.3)';
+  });
+  document.querySelectorAll('[id^="spell-radio-"]').forEach(el => {
+    el.style.borderColor = 'var(--muted)';
+    el.style.background  = 'transparent';
+  });
+
+  // Enable button
+  const btn = qs('#accept-submit-btn');
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+}
+
+async function doLogin() {
+  const username = qs('#login-username').value.trim();
+  const password = qs('#login-password').value;
+  if (!username || !password) return notify('Fill in both fields!', 'error');
+  try {
+    const res = await api('POST', '/api/auth/login', {username, password});
+    // Debug check
+    console.log('Login response:', res);
+    if (!res || !res.access_token) {
+      notify('Login failed — invalid response from server', 'error');
+      return;
+    }
+    setSession(res);
+    hideAuth();
+    updateUI();
+    navigate('home');
+    notify('Welcome back, ' + (res.user.display_name || res.user.username) + '! 🦉', 'success');
+  } catch(e) {
+    console.error('Login error:', e);
+    notify(e.message || 'Login failed', 'error');
+  }
+}
+async function doSignup(){
+  const username=qs('#signup-username').value.trim(),
+        email=qs('#signup-email').value.trim(),
+        password=qs('#signup-password').value;
+
+  const display_name=qs('#signup-display').value.trim()||undefined,
+        house=qs('#signup-house').value||undefined;
+
+  if(!username||!email||!password)
+    return notify('Fill in all required fields','error');
+
+  try{
+    const res = await api('POST','/api/auth/signup',{
+      username,email,password,display_name,house
+    });
+
+    console.log("SIGNUP RESPONSE:", res);
+
+    setSession(res);
+
+    hideAuth();
+    updateUI();
+    navigate('profile');
+
+    notify('Welcome to Spellbook! 🦉','success');
+  }
+  catch(e){
+    notify(e.message,'error');
+  }
+}
+
+function doLogout(){localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');token=null;currentUser=null;updateUI();navigate('explore');notify('Goodbye, wizard! 🌙','info');}
+function setSession(res){
+    console.log("setSession called with:", res);
+
+    if(!res){
+        alert("res is null");
+        return;
+    }
+
+    if(!res.access_token){
+        alert("access_token missing");
+        console.log(res);
+        return;
+    }
+
+    token = res.access_token;
+    currentUser = res.user;
+
+    localStorage.setItem('sb_token', token);
+    localStorage.setItem('sb_user', JSON.stringify(currentUser));
+}
+function updateUI(){
+  const in_=!!currentUser;
+  qs('#sidebar-user').style.display=in_?'block':'none';
+  qs('#sidebar-login').style.display=in_?'none':'block';
+  qs('#cast-btn').style.display=in_?'block':'none';
+  qs('#header-login-btn').style.display=in_?'none':'block';
+  qs('#header-cast-btn').style.display=in_?'block':'none';
+  qs('#header-avatar-wrap').style.display=in_?'block':'none';
+  qs('#nav-profile').style.display=in_?'flex':'none';
+  qs('#nav-settings').style.display=in_?'flex':'none';
+  qs('#mob-profile-btn').style.display=in_?'flex':'none';
+  qs('#mob-login-btn').style.display=in_?'none':'flex';
+  qs('#nav-notifications').style.display = in_ ? 'flex' : 'none';
+if (in_) {
+  checkNotifications();
+  // Har 30 seconds mein check karo
+  setInterval(checkNotifications, 30000);
+}
+  if(in_&&currentUser){
+    qs('#sidebar-name').textContent=currentUser.display_name||currentUser.username;
+    qs('#sidebar-uname').textContent='@'+currentUser.username;
+    setAv('sidebar-avatar',currentUser,36);setAv('header-avatar',currentUser,32);setAv('cast-avatar',currentUser,42);
+    checkPendingDuels();
+  }
+}
+
+// ═══════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════
+function navigate(page,param=null){
+  currentPage=page;
+  ['home','explore','search','duels','profile','settings'].forEach(p=>{const el=qs('#nav-'+p);if(el)el.classList.toggle('active',p===page);});
+  qs('#page-container').innerHTML='<div style="display:flex;justify-content:center;padding:4rem"><div class="spinner"></div></div>';
+  if(page==='home')renderFeed();
+  else if(page==='explore')renderExplore();
+  else if(page==='search')renderSearchPage(param);
+  else if(page==='duels')renderDuelsPage();
+  else if(page==='profile')renderProfile(param||currentUser?.username);
+  else if(page==='user')renderProfile(param);
+  else if(page==='spell')renderSpellDetail(param);
+  else if(page==='settings')renderSettings();
+  else if (page === 'notifications') renderNotificationsPage();
+  else renderFeed();
+
+  // ═══════════════════════════════════
+// PAGE: NOTIFICATIONS
+// ═══════════════════════════════════
+async function renderNotificationsPage() {
+  if (!currentUser) return showAuth();
+  const c = qs('#page-container');
+  try {
+    const notifs = await api('GET', '/api/notifications/');
+    // Mark all as read
+    api('POST', '/api/notifications/mark-read', {}).catch(()=>{});
+    // Reset badge
+    const badge = qs('#notif-badge');
+    if (badge) badge.style.display = 'none';
+
+    c.innerHTML = `
+      <div class="fade-in">
+        <div class="font-cinzel" style="color:var(--gold);font-size:1.2rem;font-weight:700;padding:.75rem 0;margin-bottom:.75rem;border-bottom:1px solid var(--border)">
+          🔔 Notifications
+        </div>
+        <div id="notif-list" class="space-y-3">
+          ${!notifs.length
+            ? emptyState('🔔','No notifications yet','Activity will appear here')
+            : notifs.map(n => `
+              <div class="card p-4 fade-in ${!n.is_read?'':'opacity-75'}"
+                   style="border-color:${!n.is_read?'var(--gold-dark)':'var(--border)'};cursor:${n.link_id?'pointer':'default'}"
+                   onclick="${n.link_id && n.type.includes('duel') ? 'navigate(\'duels\')' : ''}">
+                <div style="display:flex;align-items:flex-start;gap:.75rem">
+                  <div style="font-size:1.4rem;flex-shrink:0">
+                    ${n.type==='duel_challenge' ? '⚔️'
+                      : n.type==='duel_accepted'  ? '🤝'
+                      : n.type==='duel_completed' ? '🏆'
+                      : n.type==='champion'       ? '👑'
+                      : n.type==='charm'          ? '⭐'
+                      : n.type==='reply'          ? '💬'
+                      : n.type==='follow'         ? '🧙'
+                      : '🔔'}
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:.88rem;color:var(--parchment);line-height:1.4">${esc(n.message)}</div>
+                    <div style="font-size:.72rem;color:var(--muted);margin-top:.25rem">${timeAgo(n.created_at)}</div>
+                  </div>
+                  ${!n.is_read ? '<div style="width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0;margin-top:4px"></div>' : ''}
+                </div>
+              </div>`).join('')}
+        </div>
+      </div>`;
+  } catch(e) { c.innerHTML = errState(e.message); }
+}
+
+// Check notifications count
+async function checkNotifications() {
+  if (!currentUser) return;
+  try {
+    const data = await api('GET', '/api/notifications/unread-count');
+    const badge = qs('#notif-badge');
+    if (badge) {
+      if (data.count > 0) {
+        badge.textContent = data.count > 9 ? '9+' : data.count;
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+  } catch(e) {}
+}
+}
+function navigateSearch(q){qs('#search-results').style.display='none';qs('#search-input').value='';navigate('search',q);}
+
+// ═══════════════════════════════════
+// PAGE: FEED (with landing)
+// ═══════════════════════════════════
+async function renderFeed(){
+  if(!currentUser){
+    qs('#page-container').innerHTML=`
+      <div style="text-align:center;padding:3rem 1rem 5rem;position:relative;overflow:hidden" class="fade-in">
+
+        <!-- Snitch orbiting lightning bolt -->
+        <div style="position:relative;width:130px;height:130px;margin:0 auto 1.5rem">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+            <img src="/static/images/snitch.svg" width="130" height="98" alt="Golden Snitch" class="landing-snitch"/>
+          </div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.5rem;animation:glowPulse 2.5s ease-in-out infinite;pointer-events:none">⚡</div>
+        </div>
+
+        <!-- Owl + Title + Broom row -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:1.5rem;margin-bottom:1.5rem;flex-wrap:wrap">
+          <div class="landing-owl">
+            <img src="/static/images/owl.svg" width="85" height="71" alt="Owl" style="filter:drop-shadow(0 0 12px rgba(201,168,76,.7))"/>
+          </div>
+          <div>
+            <div class="font-cinzel landing-title" style="color:var(--gold);font-size:2rem;font-weight:900;line-height:1.2">Welcome to<br/>Spellbook</div>
+          </div>
+          <div class="landing-broom">
+            <img src="/static/images/broom.svg" width="130" height="52" alt="Nimbus 2000" style="filter:drop-shadow(0 0 12px rgba(201,168,76,.6))"/>
+          </div>
+        </div>
+
+        <!-- Subtitle -->
+        <div class="landing-sub" style="color:var(--muted);font-style:italic;margin-bottom:.5rem;font-size:1rem">The social network for witches and wizards</div>
+        <div class="landing-sub" style="color:var(--muted);font-size:.82rem;margin-bottom:1rem">
+          🦉 Share Spells &nbsp;·&nbsp; ⭐ Cast Charms &nbsp;·&nbsp; 🔮 Echo Magic &nbsp;·&nbsp; ⚔️ Duel Wizards
+        </div>
+
+        <!-- House badges -->
+        <div class="landing-sub" style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem">
+          <span class="house-badge house-gryffindor">🦁 Gryffindor</span>
+          <span class="house-badge house-slytherin">🐍 Slytherin</span>
+          <span class="house-badge house-ravenclaw">🦅 Ravenclaw</span>
+          <span class="house-badge house-hufflepuff">🦡 Hufflepuff</span>
+        </div>
+
+        <!-- CTA -->
+        <div class="landing-btn">
+          <button onclick="showAuth()" class="btn-gold" style="font-size:1.1rem;padding:.85rem 3rem;letter-spacing:.08em">Enter the Wizarding World ✨</button>
+          <div style="margin-top:.75rem;font-size:.78rem;color:var(--muted)">Already a wizard? <a href="#" onclick="showAuthTab('login');showAuth()" style="color:var(--gold)">Login here</a></div>
+        </div>
+
+        <!-- Bottom sparkles -->
+        <div style="position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-around;pointer-events:none;padding:0 2rem">
+          <span style="font-size:1rem;animation:sparkleFloat 6s linear infinite;color:var(--gold);opacity:.7">✨</span>
+          <span style="font-size:.8rem;animation:sparkleFloat 8s linear 1.5s infinite;color:var(--gold);opacity:.5">✦</span>
+          <span style="font-size:1rem;animation:sparkleFloat 7s linear 3s infinite;color:var(--gold);opacity:.7">✨</span>
+          <span style="font-size:.8rem;animation:sparkleFloat 9s linear .5s infinite;color:var(--gold);opacity:.5">✦</span>
+          <span style="font-size:1rem;animation:sparkleFloat 6.5s linear 4s infinite;color:var(--gold);opacity:.7">✨</span>
+        </div>
+      </div>`;
+    return;
+  }
+  try{
+    const data=await api('GET','/api/spells/feed?page=1&per_page=20');
+    qs('#page-container').innerHTML=`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;margin-bottom:.75rem;border-bottom:1px solid var(--border)">
+        <div class="font-cinzel" style="color:var(--gold);font-size:1.2rem;font-weight:700">🏰 The Great Hall</div>
+        ${currentUser?.house?'<span class="house-badge house-'+currentUser.house.toLowerCase()+'" style="font-size:.7rem;padding:4px 12px">✨ '+currentUser.house+' Feed</span>':'<span style="color:var(--muted);font-size:.78rem;font-style:italic">Set house in Settings for personalized feed</span>'}
+      </div>
+      <div id="feed-list" class="space-y-3"></div>`;
+    if(!data.spells.length)qs('#feed-list').innerHTML=emptyState('🔮','Your feed is empty','Follow some wizards!','explore','Explore');
+    else renderSpells(data.spells,'feed-list');
+  }catch(e){qs('#page-container').innerHTML=errState(e.message);}
+}
+
+// ═══════════════════════════════════
+// PAGE: EXPLORE
+// ═══════════════════════════════════
+async function renderExplore(){
+  try{
+    const data=await api('GET','/api/spells/explore?page=1&per_page=20');
+    qs('#page-container').innerHTML=`
+      <div class="font-cinzel" style="color:var(--gold);font-size:1.2rem;font-weight:700;padding:.75rem 0;margin-bottom:.75rem;border-bottom:1px solid var(--border)">🔭 Explore the Wizarding World</div>
+      <div id="explore-list" class="space-y-3"></div>`;
+    if(!data.spells.length)qs('#explore-list').innerHTML=emptyState('🌟','No spells yet','Be the first!');
+    else renderSpells(data.spells,'explore-list');
+  }catch(e){qs('#page-container').innerHTML=errState(e.message);}
+}
+
+// ═══════════════════════════════════
+// PAGE: SEARCH
+// ═══════════════════════════════════
+async function renderSearchPage(q){
+  const c=qs('#page-container');
+  c.innerHTML=`
+    <div class="fade-in">
+      <div class="font-cinzel" style="color:var(--gold);font-size:1.2rem;font-weight:700;padding:.75rem 0;margin-bottom:1rem;border-bottom:1px solid var(--border)">🔍 Search the Wizarding World</div>
+      <div style="display:flex;gap:.5rem;margin-bottom:1.25rem">
+        <input id="main-search-input" class="input-magic" type="text" placeholder="Search wizards, spells..." value="${esc(q||'')}" onkeydown="if(event.key==='Enter'){doMainSearch(this.value)}"/>
+        <button onclick="doMainSearch(qs('#main-search-input').value)" class="btn-gold" style="white-space:nowrap">Search</button>
+      </div>
+      ${q?`
+      <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+        <button id="stab-wizards" onclick="searchTabSwitch('wizards')" class="btn-gold" style="font-size:.8rem">🧙 Wizards</button>
+        <button id="stab-spells"  onclick="searchTabSwitch('spells')"  class="btn-ghost" style="font-size:.8rem">✨ Spells</button>
+      </div>
+      <div id="search-tab-content"></div>`
+      :`<div style="text-align:center;padding:3rem;color:var(--muted)"><div style="font-size:3rem;margin-bottom:.75rem">🔍</div><div class="font-cinzel" style="margin-bottom:.5rem">Search for anything</div><div style="font-size:.85rem;font-style:italic">Find wizards by name · Find spells by content</div></div>`}
+    </div>`;
+  if(q){window._searchQ=q;searchTabSwitch('wizards');}
+}
+function doMainSearch(q){if(!q.trim())return;window._searchQ=q.trim();navigate('search',q.trim());}
+async function searchTabSwitch(tab){
+  const q=window._searchQ||'';if(!q)return;
+  const wb=qs('#stab-wizards'),sb=qs('#stab-spells');
+  if(wb){wb.className=tab==='wizards'?'btn-gold':'btn-ghost';wb.style.fontSize='.8rem';}
+  if(sb){sb.className=tab==='spells'?'btn-gold':'btn-ghost';sb.style.fontSize='.8rem';}
+  const content=qs('#search-tab-content');if(!content)return;
+  content.innerHTML='<div style="display:flex;justify-content:center;padding:2rem"><div class="spinner"></div></div>';
+  try{
+    if(tab==='wizards'){
+      const users=await api('GET','/api/users/search/wizards?q='+encodeURIComponent(q));
+      if(!users.length){content.innerHTML=emptyState('🧙','No wizards found','Try different name','explore','Explore');return;}
+      content.innerHTML='<div class="space-y-3">'+users.map(u=>{
+        const hc=u.house?'house-'+u.house.toLowerCase():'';
+        return `<div class="card card-hover p-4" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:.75rem;cursor:pointer;flex:1;min-width:0" onclick="navigate('user','${u.username}')">
+            <div id="srav-${u.id}" class="avatar" style="width:52px;height:52px;font-size:1.3rem;flex-shrink:0"></div>
+            <div style="min-width:0">
+              <div class="font-cinzel" style="color:var(--gold);font-size:.95rem;font-weight:700">${esc(u.display_name||u.username)}</div>
+              <div style="color:var(--muted);font-size:.8rem">@${u.username}</div>
+              ${u.house?'<span class="house-badge '+hc+'" style="margin-top:4px;display:inline-block">'+u.house+'</span>':''}
+              ${u.bio?'<div style="font-size:.8rem;color:var(--parchment-dark);margin-top:4px;font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(u.bio)+'</div>':''}
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem;flex-shrink:0">
+            <div style="font-size:.75rem;color:var(--muted)"><strong style="color:var(--gold)">${u.followers_count}</strong> followers</div>
+            ${currentUser&&currentUser.username!==u.username?'<button id="srbtn-'+u.id+'" onclick="quickFollow(\''+u.username+'\',\'srbtn-'+u.id+'\')" class="'+(u.is_following?'btn-ghost':'btn-gold')+'" style="font-size:.8rem">'+(u.is_following?'Unfollow':'Follow')+'</button>':''}
+          </div>
+        </div>`;
+      }).join('')+'</div>';
+      users.forEach(u=>{const el=qs('#srav-'+u.id);if(el)setAvEl(el,u,52);});
+    }else{
+      const data=await api('GET','/api/spells/search/spells?q='+encodeURIComponent(q)+'&per_page=20');
+      if(!data.spells.length){content.innerHTML=emptyState('✨','No spells found','Try different keywords');return;}
+      content.innerHTML='<div id="search-spells-list" class="space-y-3"></div>';
+      renderSpells(data.spells,'search-spells-list');
+    }
+  }catch(e){content.innerHTML=errState(e.message);}
+}
+
+// ═══════════════════════════════════
+// PAGE: DUELS
+// ═══════════════════════════════════
+// ═══════════════════════════════════
+// TIME HELPER
+// ═══════════════════════════════════
+function getTimeLeft(endsAt) {
+  if (!endsAt) return null;
+  const diff = Math.floor((new Date(endsAt) - new Date()) / 1000);
+  if (diff <= 0) return 'Voting ended';
+  if (diff < 3600)  return Math.floor(diff / 60) + 'm left';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h left';
+  return Math.floor(diff / 86400) + 'd left';
+}
+
+// ═══════════════════════════════════
+// DUEL CARD
+// ═══════════════════════════════════
+function duelCard(d) {
+  const total    = d.challenger_votes + d.defender_votes;
+  const chalPct  = total > 0 ? Math.round((d.challenger_votes / total) * 100) : 50;
+  const defPct   = 100 - chalPct;
+  const isCompleted = d.status === 'completed';
+  const chalWon  = isCompleted && d.winner && d.winner.id === d.challenger.id;
+  const defWon   = isCompleted && d.winner && d.winner.id === d.defender.id;
+  const timeLeft = d.ends_at ? getTimeLeft(d.ends_at) : null;
+  const myVoteChal = d.my_vote === 'challenger';
+  const myVoteDef  = d.my_vote === 'defender';
+  const canVote  = currentUser && d.status === 'active' &&
+                   currentUser.id !== d.challenger.id &&
+                   currentUser.id !== d.defender.id;
+  const chalHouse = d.challenger.house ? 'house-' + d.challenger.house.toLowerCase() : '';
+  const defHouse  = d.defender.house   ? 'house-' + d.defender.house.toLowerCase()   : '';
+
+  return `
+  <div class="card p-4 fade-in" id="duel-card-${d.id}"
+    style="border-color:${isCompleted ? 'var(--gold-dark)' : 'var(--border)'}">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+      <div class="font-cinzel" style="color:var(--gold);font-size:.8rem;font-weight:700">⚔️ SPELL DUEL ${isCompleted ? '— COMPLETED' : ''}</div>
+      <div style="display:flex;gap:.75rem;align-items:center">
+        ${d.status === 'active' ? '<div style="font-size:.65rem;color:#4ade80;font-family:Cinzel,serif">● LIVE</div>' : ''}
+        ${timeLeft ? '<div style="font-size:.72rem;color:var(--muted)">⏱ ' + timeLeft + '</div>' : ''}
+      </div>
+    </div>
+
+    <!-- Topic -->
+    <div style="text-align:center;margin-bottom:1rem;padding:.6rem;background:rgba(201,168,76,.06);border-radius:6px;border:1px solid var(--border)">
+      <div class="font-cinzel" style="color:var(--muted);font-size:.65rem;letter-spacing:.1em;margin-bottom:.25rem">DEBATE TOPIC</div>
+      <div class="font-cinzel" style="color:var(--gold);font-size:.88rem;font-weight:700">"${esc(d.topic)}"</div>
+    </div>
+
+    <!-- VS Layout -->
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:.75rem;align-items:start;margin-bottom:1rem">
+
+      <!-- Challenger (FOR side) -->
+      <div style="text-align:center">
+        <div style="cursor:pointer" onclick="navigate('user','${d.challenger.username}')">
+          <div class="avatar" style="width:44px;height:44px;font-size:1.1rem;margin:0 auto;border-color:${d.challenger_stance === 'FOR' ? '#4ade80' : '#f87171'}">
+            ${d.challenger.profile_picture
+              ? '<img src="' + d.challenger.profile_picture + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>'
+              : (d.challenger.display_name?.[0] || d.challenger.username[0]).toUpperCase()}
+          </div>
+          <div class="font-cinzel" style="color:var(--gold);font-size:.75rem;font-weight:700;margin-top:.3rem">${esc(d.challenger.display_name || d.challenger.username)}</div>
+          ${d.challenger.house ? '<span class="house-badge ' + chalHouse + '" style="font-size:.55rem">' + d.challenger.house + '</span>' : ''}
+          <div style="margin-top:.3rem;font-size:.7rem;font-weight:700;color:${d.challenger_stance === 'FOR' ? '#4ade80' : '#f87171'};font-family:Cinzel,serif">
+            ${d.challenger_stance === 'FOR' ? '✅ FOR' : '❌ AGAINST'}
+          </div>
+          ${chalWon ? '<div style="color:#ffd700;font-size:.72rem;margin-top:3px">🏆 WINNER</div>' : ''}
+          ${d.challenger.is_champion ? '<div style="font-size:.65rem;color:#ffd700;margin-top:2px">👑 Champion</div>' : ''}
+        </div>
+        <div class="card p-2" style="margin-top:.5rem;font-size:.8rem;color:var(--parchment-dark);font-style:italic;text-align:left;min-height:70px;border-color:${d.challenger_stance === 'FOR' ? 'rgba(74,222,128,.2)' : 'rgba(248,113,113,.2)'}">
+          "${esc(d.challenger_spell.content)}"
+        </div>
+        <div style="margin-top:.4rem;font-size:.85rem;font-weight:700;color:${myVoteChal ? 'var(--gold)' : 'var(--parchment)'}">
+          ${d.challenger_votes} votes ${myVoteChal ? '✓' : ''}
+        </div>
+        ${d.top_for_reason ? '<div style="font-size:.72rem;color:var(--muted);margin-top:.2rem;font-style:italic">💬 "' + esc(d.top_for_reason) + '"</div>' : ''}
+        ${canVote ? `
+        <div style="margin-top:.5rem">
+          <button onclick="openVoteModal(${d.id},'challenger')"
+            id="vote-chal-${d.id}"
+            class="${myVoteChal ? 'btn-gold' : 'btn-ghost'} w-full"
+            style="font-size:.72rem;padding:.35rem">
+            ${myVoteChal ? '✓ Voted FOR' : '✅ Vote FOR'}
+          </button>
+        </div>` : ''}
+      </div>
+
+      <!-- VS -->
+      <div style="text-align:center;padding-top:2rem">
+        <div class="font-cinzel" style="color:var(--crimson);font-size:1.2rem;font-weight:900">VS</div>
+      </div>
+
+      <!-- Defender (AGAINST side) -->
+      <div style="text-align:center">
+        <div style="cursor:pointer" onclick="navigate('user','${d.defender.username}')">
+          <div class="avatar" style="width:44px;height:44px;font-size:1.1rem;margin:0 auto;border-color:${d.defender_stance === 'FOR' ? '#4ade80' : '#f87171'}">
+            ${d.defender.profile_picture
+              ? '<img src="' + d.defender.profile_picture + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>'
+              : (d.defender.display_name?.[0] || d.defender.username[0]).toUpperCase()}
+          </div>
+          <div class="font-cinzel" style="color:var(--gold);font-size:.75rem;font-weight:700;margin-top:.3rem">${esc(d.defender.display_name || d.defender.username)}</div>
+          ${d.defender.house ? '<span class="house-badge ' + defHouse + '" style="font-size:.55rem">' + d.defender.house + '</span>' : ''}
+          <div style="margin-top:.3rem;font-size:.7rem;font-weight:700;color:${d.defender_stance === 'FOR' ? '#4ade80' : '#f87171'};font-family:Cinzel,serif">
+            ${d.defender_stance === 'FOR' ? '✅ FOR' : '❌ AGAINST'}
+          </div>
+          ${defWon ? '<div style="color:#ffd700;font-size:.72rem;margin-top:3px">🏆 WINNER</div>' : ''}
+          ${d.defender.is_champion ? '<div style="font-size:.65rem;color:#ffd700;margin-top:2px">👑 Champion</div>' : ''}
+        </div>
+        ${d.defender_spell
+          ? '<div class="card p-2" style="margin-top:.5rem;font-size:.8rem;color:var(--parchment-dark);font-style:italic;text-align:left;min-height:70px;border-color:' + (d.defender_stance === 'FOR' ? 'rgba(74,222,128,.2)' : 'rgba(248,113,113,.2)') + '">"' + esc(d.defender_spell.content) + '"</div>'
+          : '<div class="card p-2" style="margin-top:.5rem;font-size:.8rem;color:var(--muted);text-align:center;min-height:70px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.3rem"><span>⏳</span><span>Awaiting response...</span></div>'}
+        <div style="margin-top:.4rem;font-size:.85rem;font-weight:700;color:${myVoteDef ? 'var(--gold)' : 'var(--parchment)'}">
+          ${d.defender_votes} votes ${myVoteDef ? '✓' : ''}
+        </div>
+        ${d.top_against_reason ? '<div style="font-size:.72rem;color:var(--muted);margin-top:.2rem;font-style:italic">💬 "' + esc(d.top_against_reason) + '"</div>' : ''}
+        ${canVote && d.defender_spell ? `
+        <div style="margin-top:.5rem">
+          <button onclick="openVoteModal(${d.id},'defender')"
+            id="vote-def-${d.id}"
+            class="${myVoteDef ? 'btn-gold' : 'btn-ghost'} w-full"
+            style="font-size:.72rem;padding:.35rem">
+            ${myVoteDef ? '✓ Voted AGAINST' : '❌ Vote AGAINST'}
+          </button>
+        </div>` : ''}
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    ${total > 0 ? `
+    <div style="margin-top:.5rem">
+      <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);margin-bottom:4px">
+        <span style="color:#4ade80">✅ FOR ${chalPct}%</span>
+        <span>${total} votes</span>
+        <span style="color:#f87171">❌ AGAINST ${defPct}%</span>
+      </div>
+      <div style="height:8px;border-radius:4px;background:var(--border);overflow:hidden">
+        <div style="height:100%;width:${chalPct}%;background:linear-gradient(to right,#16a34a,#4ade80);border-radius:4px;transition:width .5s"></div>
+      </div>
+    </div>` : '<div style="text-align:center;font-size:.75rem;color:var(--muted);margin-top:.5rem;font-style:italic">No votes yet — be the first!</div>'}
+
+    ${!currentUser && d.status === 'active'
+      ? '<div style="text-align:center;margin-top:.75rem"><button onclick="showAuth()" class="btn-gold" style="font-size:.8rem">Login to Vote ⚡</button></div>'
+      : ''}
+    ${currentUser && (currentUser.id === d.challenger.id || currentUser.id === d.defender.id) && d.status === 'active'
+      ? '<div style="text-align:center;margin-top:.5rem;font-size:.75rem;color:var(--muted);font-style:italic">You are in this duel — you cannot vote</div>'
+      : ''}
+    ${currentUser &&
+  (currentUser.id === d.challenger.id || currentUser.id === d.defender.id) &&
+  d.status === 'active' ? `
+  <div style="text-align:center;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border)">
+    <div style="font-size:.72rem;color:var(--muted);margin-bottom:.4rem;font-style:italic">
+      ⏱ ${getTimeLeft(d.ends_at)} — voting khatam hone pe winner announce hoga
+    </div>
+    <button onclick="forceComplete(${d.id})"
+      style="background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;padding:.35rem .8rem;border-radius:4px;font-size:.72rem;font-family:Cinzel,serif">
+      🏁 End Duel Now (Test)
+    </button>
+  </div>` : ''}
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// PENDING DUEL CARD
+// ═══════════════════════════════════
+function pendingDuelCard(d) {
+  return `
+  <div class="card p-4 fade-in" style="border-color:var(--crimson)">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem">
+      <div style="flex:1;min-width:0">
+        <div class="font-cinzel" style="color:var(--crimson);font-size:.8rem;font-weight:700;margin-bottom:.3rem">⚔️ DUEL CHALLENGE RECEIVED!</div>
+        <div style="font-size:.82rem;color:var(--muted);margin-bottom:.2rem">
+          Topic: <span style="color:var(--gold);font-weight:600">"${esc(d.topic)}"</span>
+        </div>
+        <div style="font-size:.85rem;margin-bottom:.2rem">
+          <span style="color:var(--gold);font-weight:700">${esc(d.challenger.display_name || d.challenger.username)}</span>
+          <span style="color:var(--muted)"> is </span>
+          <span style="color:#4ade80;font-weight:700">${d.challenger_stance}</span>
+          <span style="color:var(--muted)"> — you must be </span>
+          <span style="color:#f87171;font-weight:700">${d.defender_stance}</span>
+        </div>
+        <div style="font-size:.8rem;font-style:italic;color:var(--parchment-dark)">"${esc(d.challenger_spell.content)}"</div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-shrink:0">
+        <button onclick="openAcceptModal(${d.id},'${escA(d.challenger_spell.content)}','${escA(d.topic)}')" class="btn-gold" style="font-size:.8rem">Accept ⚔️</button>
+        <button onclick="quickDecline(${d.id})" class="btn-ghost" style="font-size:.8rem">Decline</button>
+      </div>
+    </div>
+  </div>`;
+}
+async function renderDuelsPage(){
+  const c=qs('#page-container');
+  try{
+    const [active,pending,completed]=await Promise.all([
+      api('GET','/api/duels/active'),
+      currentUser?api('GET','/api/duels/my/pending'):Promise.resolve([]),
+      api('GET','/api/duels/completed')
+    ]);
+    c.innerHTML=`
+      <div class="fade-in">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;margin-bottom:1rem;border-bottom:1px solid var(--border)">
+          <div class="font-cinzel" style="color:var(--gold);font-size:1.2rem;font-weight:700">⚔️ Spell Duels</div>
+          <div style="font-size:.78rem;color:var(--muted);font-style:italic">Community votes decide the winner</div>
+        </div>
+        ${pending.length?`<div style="margin-bottom:1.5rem"><div class="font-cinzel" style="color:var(--crimson);font-size:.85rem;font-weight:700;margin-bottom:.75rem">🔔 Pending Challenges (${pending.length})</div><div class="space-y-3">${pending.map(d=>pendingDuelCard(d)).join('')}</div></div>`:''}
+        <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+          <button id="dtab-active"    onclick="duelTabSwitch('active')"    class="btn-gold"  style="font-size:.8rem">⚔️ Active (${active.length})</button>
+          <button id="dtab-completed" onclick="duelTabSwitch('completed')" class="btn-ghost" style="font-size:.8rem">🏆 Completed (${completed.length})</button>
+        </div>
+        <div id="duels-tab-content" class="space-y-4">
+          ${!active.length?emptyState('⚔️','No active duels','Challenge someone from their spell!','explore','Find Spells'):active.map(d=>duelCard(d)).join('')}
+        </div>
+      </div>`;
+    window._activeDuels=active;window._completedDuels=completed;
+  }catch(e){c.innerHTML=errState(e.message);}
+}
+function duelTabSwitch(tab){
+  qs('#dtab-active').className=tab==='active'?'btn-gold':'btn-ghost';
+  qs('#dtab-completed').className=tab==='completed'?'btn-gold':'btn-ghost';
+  qs('#dtab-active').style.fontSize=qs('#dtab-completed').style.fontSize='.8rem';
+  const duels=tab==='active'?(window._activeDuels||[]):(window._completedDuels||[]);
+  const content=qs('#duels-tab-content');if(!content)return;
+  if(!duels.length){content.innerHTML=emptyState(tab==='active'?'⚔️':'🏆',tab==='active'?'No active duels':'No completed duels','');return;}
+  content.innerHTML=duels.map(d=>duelCard(d)).join('');
+}
+function duelCard(d){
+  const total = d.challenger_votes + d.defender_votes;
+  const chalPct = total > 0 ? Math.round((d.challenger_votes / total) * 100) : 50;
+  const isCompleted = d.status === 'completed';
+  const chalWon = isCompleted && d.winner && d.winner.id === d.challenger.id;
+  const defWon = isCompleted && d.winner && d.winner.id === d.defender.id;
+  const timeLeft = d.ends_at ? getTimeLeft(d.ends_at) : null;
+
+  return `
+  <div class="card p-5 fade-in" id="duel-card-${d.id}" style="border-color:${isCompleted?'var(--gold-dark)':'var(--border)'}">
+    <div class="font-cinzel" style="color:var(--gold);font-size:.85rem;margin-bottom:8px">⚔️ STRUCTURED SPELL DUEL</div>
+    <div style="font-size:.95rem;font-weight:600;margin-bottom:1rem;color:var(--parchment)">${esc(d.topic)}</div>
+
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;margin-bottom:1.25rem">
+      <!-- FOR Side -->
+      <div style="text-align:center">
+        <div onclick="navigate('user','${d.challenger.username}')" style="cursor:pointer">
+          <div class="avatar" style="width:48px;height:48px;margin:0 auto;font-size:1.2rem">${d.challenger.profile_picture ? `<img src="${d.challenger.profile_picture}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>` : (d.challenger.display_name?.[0]||d.challenger.username[0]).toUpperCase()}</div>
+          <div class="font-cinzel" style="color:var(--gold);margin-top:6px">${esc(d.challenger.display_name||d.challenger.username)}</div>
+          <div style="color:#4ade80;font-size:.8rem">FOR</div>
+        </div>
+        <div class="card p-3 mt-3" style="font-size:.88rem;color:var(--parchment-dark);min-height:70px">"${esc(d.challenger_spell.content)}"</div>
+        <div style="margin-top:8px;font-weight:700;color:var(--gold)">${d.challenger_votes} votes</div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--crimson);font-weight:900">VS</div>
+
+      <!-- AGAINST Side -->
+      <div style="text-align:center">
+        <div onclick="navigate('user','${d.defender.username}')" style="cursor:pointer">
+          <div class="avatar" style="width:48px;height:48px;margin:0 auto;font-size:1.2rem">${d.defender.profile_picture ? `<img src="${d.defender.profile_picture}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>` : (d.defender.display_name?.[0]||d.defender.username[0]).toUpperCase()}</div>
+          <div class="font-cinzel" style="color:var(--gold);margin-top:6px">${esc(d.defender.display_name||d.defender.username)}</div>
+          <div style="color:#f87171;font-size:.8rem">AGAINST</div>
+        </div>
+        ${d.defender_spell ? `<div class="card p-3 mt-3" style="font-size:.88rem;color:var(--parchment-dark);min-height:70px">"${esc(d.defender_spell.content)}"</div>` : `<div class="card p-3 mt-3 text-center" style="color:var(--muted);min-height:70px">⏳ Waiting for response...</div>`}
+        <div style="margin-top:8px;font-weight:700">${d.defender_votes} votes</div>
+      </div>
+    </div>
+
+    ${total > 0 ? `
+    <div style="margin:1rem 0">
+      <div style="height:10px;background:var(--border);border-radius:9999px;overflow:hidden">
+        <div style="height:100%;width:${chalPct}%;background:linear-gradient(to right,#4ade80,var(--gold));transition:all .4s"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;text-xs mt-1">
+        <span>${chalPct}% FOR</span>
+        <span>${100-chalPct}% AGAINST</span>
+      </div>
+    </div>` : ''}
+
+    ${timeLeft ? `<div style="text-center text-sm text-amber-400">${timeLeft}</div>` : ''}
+
+    ${currentUser && d.status==='active' && currentUser.id !== d.challenger.id && currentUser.id !== d.defender.id ? `
+    <div class="flex gap-3 mt-4">
+      <button onclick="castVote(${d.id},'challenger')" class="flex-1 btn-gold">⚡ Vote FOR</button>
+      <button onclick="castVote(${d.id},'defender')" class="flex-1 btn-ghost">🐍 Vote AGAINST</button>
+    </div>` : ''}
+  </div>`;
+}
+// ═══════════════════════════════════
+// PAGE: PROFILE
+// ═══════════════════════════════════
+// ═══════════════════════════════════
+// PAGE: PROFILE (Updated with Champion Badge)
+// ═══════════════════════════════════
+async function renderProfile(username){
+  if(!username){if(currentUser)username=currentUser.username;else return showAuth();}
+  try{
+    const [user,spData,duelStats]=await Promise.all([
+      api('GET','/api/users/'+username),
+      api('GET','/api/spells/user/'+username+'?page=1&per_page=15'),
+      api('GET','/api/duels/user/'+username+'/stats').catch(()=>null)
+    ]);
+
+    const isMe = currentUser?.username === user.username;
+    const hc = user.house ? 'house-'+user.house.toLowerCase() : '';
+
+    qs('#page-container').innerHTML = `
+      <div class="fade-in">
+        <div class="card p-6" style="margin-bottom:1.5rem">
+          <div style="display:flex;align-items:flex-start;gap:1.5rem;flex-wrap:wrap">
+            <div id="profile-av" class="avatar" style="width:80px;height:80px;font-size:2rem;border:3px solid var(--gold-dark);flex-shrink:0"></div>
+            
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+                <div>
+                  <div class="font-cinzel" style="color:var(--gold);font-size:1.35rem;font-weight:700">${esc(user.display_name||user.username)}</div>
+                  <div style="color:var(--muted)">@${user.username}</div>
+                  ${user.house ? `<span class="house-badge ${hc}" style="margin-top:6px">${user.house}</span>` : ''}
+                  ${user.is_champion
+  ? '<div style="margin-top:.5rem;display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,#8b6914,#ffd700,#8b6914);color:#1a0a00;padding:4px 12px;border-radius:4px;font-family:Cinzel,serif;font-size:.72rem;font-weight:700;letter-spacing:.05em">🏆 DUEL CHAMPION</div>'
+  : ''}
+${(user.duel_wins||0) > 0
+  ? '<div style="margin-top:.4rem;font-size:.78rem;color:var(--muted)">⚔️ '+user.duel_wins+'W · '+(user.duel_losses||0)+'L · '+(user.duel_wins+user.duel_losses > 0 ? Math.round(user.duel_wins/(user.duel_wins+user.duel_losses)*100) : 0)+'% win rate</div>'
+  : ''}
+                </div>
+
+                ${user.is_champion ? `
+                <div style="background:linear-gradient(135deg,#ffd700,#facc15);color:#1a0a00;padding:6px 14px;border-radius:6px;font-weight:700;font-size:.85rem;display:flex;align-items:center;gap:6px">
+                  🏆 DUEL CHAMPION
+                </div>` : ''}
+
+                <div>
+                  ${isMe ? 
+                    `<button onclick="navigate('settings')" class="btn-ghost" style="font-size:.85rem">Edit Profile</button>` : 
+                    currentUser ? 
+                    `<button id="flw-${user.id}" onclick="toggleFollow('${user.username}',${user.id})" class="${user.is_following?'btn-ghost':'btn-gold'}" style="font-size:.85rem">${user.is_following?'Unfollow':'Follow'}</button>` : 
+                    `<button onclick="showAuth()" class="btn-gold">Follow</button>`
+                  }
+                </div>
+              </div>
+
+              ${user.bio ? `<p style="margin-top:1rem;font-style:italic;color:var(--parchment-dark)">${esc(user.bio)}</p>` : ''}
+
+              <div style="display:flex;gap:2rem;margin-top:1.25rem;font-size:.9rem">
+                <div><strong style="color:var(--gold)">${user.followers_count}</strong> Followers</div>
+                <div><strong style="color:var(--gold)">${user.following_count}</strong> Following</div>
+                <div><strong style="color:var(--gold)">${spData.total}</strong> Spells</div>
+                ${duelStats ? `<div><strong style="color:var(--gold)">${duelStats.duel_wins}</strong> Duel Wins ${duelStats.is_champion?'🏆':''}</div>` : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="font-cinzel" style="color:var(--gold);font-size:1.1rem;font-weight:700;padding:.75rem 0;margin-bottom:.75rem;border-bottom:1px solid var(--border)">📜 Recent Spells</div>
+        <div id="profile-spells" class="space-y-4"></div>
+      </div>`;
+
+    setAv('profile-av', user, 80);
+    if(spData.spells?.length) renderSpells(spData.spells, 'profile-spells');
+    else qs('#profile-spells').innerHTML = emptyState('📜','No spells yet','');
+  }catch(e){
+    qs('#page-container').innerHTML = errState(e.message);
+  }
+}
+
+// ═══════════════════════════════════
+// PAGE: SPELL DETAIL
+// ═══════════════════════════════════
+async function renderSpellDetail(spellId){
+  if(!spellId)return navigate('explore');
+  try{
+    const [spell,replies]=await Promise.all([api('GET','/api/spells/'+spellId),api('GET','/api/spells/'+spellId+'/replies')]);
+    qs('#page-container').innerHTML=`
+      <div class="fade-in">
+        <button onclick="history.back()" class="btn-ghost" style="font-size:.85rem;margin-bottom:1rem">← Back</button>
+        <div id="spell-detail"></div>
+        <div style="margin-top:1.5rem">
+          ${currentUser?`<div class="card p-4" style="margin-bottom:1rem"><div style="display:flex;gap:.75rem"><div id="sd-av" class="avatar"></div><div style="flex:1"><textarea id="sd-input" class="input-magic w-full" rows="2" placeholder="Reply..." maxlength="280" oninput="updateBar('sd-input','sd-bar','sd-cnt')"></textarea><div style="display:flex;align-items:center;justify-content:space-between;margin-top:.35rem"><span id="sd-cnt" style="color:var(--muted);font-size:.72rem">0/280</span><div style="flex:1;margin:0 .75rem"><div class="char-bar" id="sd-bar" style="width:0%"></div></div><button onclick="submitInlineReply(${spell.id})" class="btn-gold" style="font-size:.8rem">Reply</button></div></div></div></div>`:''}
+          <div class="font-cinzel" style="color:var(--gold);font-size:.85rem;font-weight:700;padding:.5rem 0;margin-bottom:.75rem;border-bottom:1px solid var(--border)">💬 Replies (${replies.length})</div>
+          <div id="sd-replies" class="space-y-3">${!replies.length?'<div style="text-align:center;padding:2rem;color:var(--muted);font-style:italic">Be the first to reply!</div>':''}</div>
+        </div>
+      </div>`;
+    qs('#spell-detail').innerHTML=spellCard(spell,true);afterRender([spell]);
+    if(currentUser)setAv('sd-av',currentUser,42);
+    if(replies.length)qs('#sd-replies').innerHTML=replies.map(r=>replyCard(r)).join('');
+  }catch(e){qs('#page-container').innerHTML=errState(e.message);}
+}
+
+// ═══════════════════════════════════
+// PAGE: SETTINGS
+// ═══════════════════════════════════
+async function renderSettings(){
+  if(!currentUser)return showAuth();
+  qs('#page-container').innerHTML=`
+    <div style="max-width:32rem;margin:0 auto" class="fade-in">
+      <div class="font-cinzel" style="color:var(--gold);font-size:1.2rem;font-weight:700;padding:.75rem 0;margin-bottom:1rem;border-bottom:1px solid var(--border)">⚙ Edit Profile</div>
+      <div class="card p-6">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+          <div id="set-av" class="avatar" style="width:64px;height:64px;font-size:1.6rem"></div>
+          <div><div class="font-cinzel" style="color:var(--gold);font-weight:700">${esc(currentUser.display_name||currentUser.username)}</div><div style="color:var(--muted);font-size:.85rem">@${currentUser.username}</div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.75rem">
+          <div><label class="font-cinzel" style="color:var(--muted);font-size:.7rem;letter-spacing:.1em;display:block;margin-bottom:4px">DISPLAY NAME</label><input id="set-display" class="input-magic" value="${esc(currentUser.display_name||'')}"/></div>
+          <div><label class="font-cinzel" style="color:var(--muted);font-size:.7rem;letter-spacing:.1em;display:block;margin-bottom:4px">BIO</label><textarea id="set-bio" class="input-magic" rows="3" maxlength="200">${esc(currentUser.bio||'')}</textarea></div>
+          <div><label class="font-cinzel" style="color:var(--muted);font-size:.7rem;letter-spacing:.1em;display:block;margin-bottom:4px">HOUSE</label>
+            <select id="set-house" class="input-magic" style="background:#0d0a05">
+              <option value="">No house</option>
+              <option value="Gryffindor" ${currentUser.house==='Gryffindor'?'selected':''}>🦁 Gryffindor</option>
+              <option value="Slytherin"  ${currentUser.house==='Slytherin' ?'selected':''}>🐍 Slytherin</option>
+              <option value="Ravenclaw"  ${currentUser.house==='Ravenclaw' ?'selected':''}>🦅 Ravenclaw</option>
+              <option value="Hufflepuff" ${currentUser.house==='Hufflepuff'?'selected':''}>🦡 Hufflepuff</option>
+            </select>
+          </div>
+          <div><label class="font-cinzel" style="color:var(--muted);font-size:.7rem;letter-spacing:.1em;display:block;margin-bottom:4px">PROFILE PICTURE</label><input type="file" id="set-avatar" accept="image/*" class="input-magic" style="padding:.4rem"/></div>
+          <div style="display:flex;gap:.75rem;padding-top:.5rem"><button onclick="saveSettings()" class="btn-gold flex-1">Save Changes</button><button onclick="navigate('profile')" class="btn-ghost flex-1">Cancel</button></div>
+          <div class="divider"></div>
+          <button onclick="doLogout()" style="background:transparent;border:1px solid #5c1010;color:#c05050;cursor:pointer;padding:.5rem;border-radius:4px;font-size:.85rem;width:100%">Logout</button>
+        </div>
+      </div>
+    </div>`;
+  setAv('set-av',currentUser,64);
+}
+async function saveSettings(){
+  const fd=new FormData();
+  const d=qs('#set-display').value.trim(),b=qs('#set-bio').value.trim(),h=qs('#set-house').value,f=qs('#set-avatar').files[0];
+  if(d)fd.append('display_name',d);if(b)fd.append('bio',b);if(h)fd.append('house',h);if(f)fd.append('profile_picture',f);
+  try{
+    const res=await fetch('/api/users/me/update',{method:'PUT',headers:{Authorization:'Bearer '+token},body:fd});
+    if(!res.ok){const e=await res.json();throw new Error(e.detail);}
+    const user=await res.json();currentUser={...currentUser,...user};
+    localStorage.setItem('sb_user',JSON.stringify(currentUser));updateUI();notify('Profile updated! ✨','success');navigate('profile');
+  }catch(e){notify(e.message||'Update failed','error');}
+}
+
+// ═══════════════════════════════════
+// SPELL CARDS
+// ═══════════════════════════════════
+function spellCard(s,large=false){
+  const a=s.author,hc=a.house?'house-'+a.house.toLowerCase():'';
+  const rid='av-'+s.id+'-'+Math.random().toString(36).slice(2,5);
+  const sz=large?'width:48px;height:48px;font-size:1.2rem;':'';
+  const echoHdr=s.echo_of_id?'<div style="color:var(--muted);font-size:.72rem;margin-bottom:.5rem">🔮 Echo Spell</div>':'';
+  const echoBody=s.echo_of?`<div class="card p-3" style="margin-top:.5rem;border-color:rgba(201,168,76,.3)"><div style="color:var(--muted);font-size:.7rem;margin-bottom:4px">🔮 Originally by <span style="color:var(--gold);cursor:pointer" onclick="navigate('user','${s.echo_of.author.username}')">@${s.echo_of.author.username}</span></div><p style="font-size:.85rem;color:var(--parchment-dark)">${esc(s.echo_of.content)}</p></div>`:'';
+  const isOwn=currentUser&&currentUser.id===a.id;
+  return `
+  <div class="card card-hover p-4 fade-in" id="sc-${s.id}">
+    ${echoHdr}
+    <div style="display:flex;gap:.75rem">
+      <div id="${rid}" class="avatar" style="${sz}cursor:pointer" onclick="navigate('user','${a.username}')"></div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:4px">
+          <span class="font-cinzel" style="color:var(--gold);font-size:.85rem;font-weight:700;cursor:pointer" onclick="navigate('user','${a.username}')">${esc(a.display_name||a.username)}</span>
+          <span style="color:var(--muted);font-size:.72rem">@${a.username}</span>
+          ${a.house?'<span class="house-badge '+hc+'">'+a.house+'</span>':''}
+          <span style="color:var(--muted);font-size:.72rem;margin-left:auto">${timeAgo(s.created_at)}</span>
+        </div>
+        <p style="font-size:.9rem;line-height:1.5;color:var(--parchment);cursor:pointer" onclick="navigate('spell',${s.id})">${esc(s.content)}</p>
+        ${s.image_url?'<img src="'+s.image_url+'" style="border-radius:8px;margin-top:.5rem;max-height:16rem;width:100%;object-fit:cover;border:1px solid var(--border);cursor:pointer" onclick="navigate(\'spell\','+s.id+')"/>':''}
+        ${echoBody}
+        <div style="display:flex;align-items:center;gap:4px;margin-top:.75rem;padding-top:.5rem;border-top:1px solid var(--border);flex-wrap:wrap">
+          <button onclick="toggleCharm(${s.id})" id="cb-${s.id}" class="action-btn" style="color:${s.is_charmed?'var(--gold)':'var(--muted)'}">
+            <span id="ci-${s.id}">${s.is_charmed?'⭐':'☆'}</span><span id="cc-${s.id}">${s.charms_count}</span><span style="font-size:.7rem">Charm</span>
+          </button>
+          <button onclick="openReplyModal(${s.id},'${escA(s.content)}')" class="action-btn" style="color:var(--muted)">
+            <span>💬</span><span id="rc-${s.id}">${s.replies_count}</span><span style="font-size:.7rem">Reply</span>
+          </button>
+          <button onclick="openEchoModal(${s.id},'${escA(s.content)}')" class="action-btn" style="color:${s.is_echoed?'var(--gold)':'var(--muted)'}">
+            <span>🔮</span><span id="ec-${s.id}">${s.echoes_count}</span><span style="font-size:.7rem">Echo</span>
+          </button>
+          <button onclick="navigate('spell',${s.id})" class="action-btn" style="color:var(--muted)"><span>↗</span><span style="font-size:.7rem">View</span></button>
+          ${isOwn?'<button onclick="openChallengeModal('+s.id+',\''+escA(s.content)+'\')" class="action-btn" style="color:var(--gold)"><span>⚔️</span><span style="font-size:.7rem">Duel</span></button>':''}
+          ${isOwn?'<button onclick="vanishSpell('+s.id+')" class="action-btn" style="color:var(--muted);margin-left:auto"><span>🗑</span><span style="font-size:.7rem">Vanish</span></button>':''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function replyCard(r){
+  const rid='rav-'+r.id;
+  setTimeout(()=>{const el=qs('#'+rid);if(el)setAvEl(el,r.author,34);},0);
+  return `<div class="card p-3 fade-in"><div style="display:flex;gap:.75rem"><div id="${rid}" class="avatar" style="width:34px;height:34px;font-size:.8rem;flex-shrink:0"></div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:4px"><span class="font-cinzel" style="color:var(--gold);font-size:.78rem;font-weight:700;cursor:pointer" onclick="navigate('user','${r.author.username}')">${esc(r.author.display_name||r.author.username)}</span><span style="color:var(--muted);font-size:.68rem">@${r.author.username}</span><span style="color:var(--muted);font-size:.68rem;margin-left:auto">${timeAgo(r.created_at)}</span></div><p style="font-size:.88rem;color:var(--parchment)">${esc(r.content)}</p></div></div></div>`;
+}
+function renderSpells(spells,containerId){
+  const el=qs('#'+containerId);if(!el)return;
+  el.innerHTML=spells.map(s=>spellCard(s)).join('');afterRender(spells);
+}
+function afterRender(spells){
+  spells.forEach(s=>{document.querySelectorAll('[id^="av-'+s.id+'-"]').forEach(el=>setAvEl(el,s.author,42));});
+}
+
+// ═══════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════
+async function castSpell(){
+  if(!currentUser)return showAuth();
+  const content=qs('#cast-content').value.trim();
+  if(!content)return notify('Write something magical!','error');
+  const imgFile=qs('#cast-image').files[0];
+  const fd=new FormData();fd.append('content',content);if(imgFile)fd.append('image',imgFile);
+  try{
+    const res=await fetch('/api/spells/cast',{method:'POST',headers:{Authorization:'Bearer '+token},body:fd});
+    if(!res.ok){const e=await res.json();throw new Error(e.detail);}
+    const spell=await res.json();closeModal('cast-modal');qs('#cast-content').value='';removeCastImg();
+    notify('Spell cast! ✨','success');
+    ['feed-list','explore-list'].forEach(id=>{const el=qs('#'+id);if(el){el.insertAdjacentHTML('afterbegin',spellCard(spell));afterRender([spell]);}});
+  }catch(e){notify(e.message||'Failed','error');}
+}
+
+// ═══════════════════════════════════
+// VOTE MODAL
+// ═══════════════════════════════════
+
+function openVoteModal(duelId, side) {
+  if (!currentUser) return showAuth();
+  voteTargetDuelId = duelId;
+  voteTargetSide   = side;
+
+  const label = side === 'challenger' ? '✅ FOR' : '❌ AGAINST';
+
+  // Simple inline vote with reason
+  const reason = prompt(`Voting ${label}\n\nOptional: Why are you voting this way?\n(Press OK to vote, Cancel to abort)`);
+
+  if (reason === null) return; // User cancelled
+
+  castVote(duelId, side, reason.trim() || null);
+}
+
+async function castVote(duelId, votedFor, reason=null) {
+  if (!currentUser) return showAuth();
+  try {
+    const updated = await api('POST', '/api/duels/' + duelId + '/vote', {
+      voted_for: votedFor,
+      reason: reason
+    });
+    notify('Vote cast! ' + (votedFor === 'challenger' ? '✅ FOR' : '❌ AGAINST'), 'success');
+    // Refresh duel card
+    const card = qs('#duel-card-' + duelId);
+    if (card) card.outerHTML = duelCard(updated);
+  } catch(e) { notify(e.message, 'error'); }
+}
+async function forceComplete(duelId) {
+  if (!confirm('Duel abhi end karo? Winner votes se decide hoga!')) return;
+  try {
+    await api('POST', '/api/duels/' + duelId + '/force-complete', {});
+    notify('Duel completed! Winner announced! 🏆', 'success');
+    renderDuelsPage();
+  } catch(e) { notify(e.message, 'error'); }
+}
+async function toggleCharm(spellId){
+  if(!currentUser)return showAuth();
+  try{
+    const d=await api('POST','/api/spells/'+spellId+'/charm',{});
+    const icon=qs('#ci-'+spellId),cnt=qs('#cc-'+spellId),btn=qs('#cb-'+spellId);
+    if(icon){icon.textContent=d.is_charmed?'⭐':'☆';icon.classList.add('charm-animate');setTimeout(()=>icon.classList.remove('charm-animate'),300);}
+    if(cnt)cnt.textContent=d.charms_count;if(btn)btn.style.color=d.is_charmed?'var(--gold)':'var(--muted)';
+  }catch(e){notify(e.message,'error');}
+}
+async function vanishSpell(spellId){
+  if(!confirm('Evanesco! Vanish this spell?'))return;
+  try{
+    await api('DELETE','/api/spells/'+spellId);
+    const card=qs('#sc-'+spellId);if(card){card.style.transition='all .3s';card.style.opacity='0';setTimeout(()=>card.remove(),300);}
+    notify('Spell vanished! 💨','success');
+  }catch(e){notify(e.message,'error');}
+}
+function openReplyModal(spellId,content){
+  if(!currentUser)return showAuth();replySpellId=spellId;qs('#reply-original').textContent=content;
+  qs('#reply-content').value='';updateBar('reply-content','reply-bar','reply-count');
+  qs('#reply-modal').style.display='flex';setTimeout(()=>qs('#reply-content').focus(),100);
+}
+async function submitReply(){
+  if(!replySpellId)return;const content=qs('#reply-content').value.trim();
+  if(!content)return notify('Write your reply!','error');
+  try{
+    await api('POST','/api/spells/'+replySpellId+'/reply',{content});closeModal('reply-modal');
+    const cnt=qs('#rc-'+replySpellId);if(cnt)cnt.textContent=parseInt(cnt.textContent||0)+1;
+    notify('Reply cast! 📜','success');replySpellId=null;
+  }catch(e){notify(e.message,'error');}
+}
+async function submitInlineReply(spellId){
+  if(!currentUser)return showAuth();const content=qs('#sd-input').value.trim();
+  if(!content)return notify('Write your reply!','error');
+  try{
+    const reply=await api('POST','/api/spells/'+spellId+'/reply',{content});qs('#sd-input').value='';updateBar('sd-input','sd-bar','sd-cnt');
+    qs('#sd-replies').insertAdjacentHTML('afterbegin',replyCard(reply));
+    const cnt=qs('#rc-'+spellId);if(cnt)cnt.textContent=parseInt(cnt.textContent||0)+1;notify('Reply cast! 📜','success');
+  }catch(e){notify(e.message,'error');}
+}
+function openEchoModal(spellId,content){
+  if(!currentUser)return showAuth();echoSpellId=spellId;qs('#echo-original').textContent=content;
+  qs('#echo-content').value='';updateBar('echo-content','echo-bar','echo-count');
+  qs('#echo-modal').style.display='flex';setTimeout(()=>qs('#echo-content').focus(),100);
+}
+async function submitEcho(){
+  if(!echoSpellId)return;const content=qs('#echo-content').value.trim()||'🔮 Echo Spell';
+  const fd=new FormData();fd.append('content',content);fd.append('echo_of_id',echoSpellId);
+  try{
+    const res=await fetch('/api/spells/cast',{method:'POST',headers:{Authorization:'Bearer '+token},body:fd});
+    if(!res.ok){const e=await res.json();throw new Error(e.detail);}closeModal('echo-modal');
+    const cnt=qs('#ec-'+echoSpellId);if(cnt)cnt.textContent=parseInt(cnt.textContent||0)+1;
+    notify('Echo Spell cast! 🔮','success');echoSpellId=null;
+  }catch(e){notify(e.message,'error');}
+}
+async function toggleFollow(username,userId){
+  if(!currentUser)return showAuth();
+  try{
+    const d=await api('POST','/api/users/'+username+'/follow',{});
+    const btn=qs('#flw-'+userId);if(btn){btn.textContent=d.is_following?'Unfollow':'Follow';btn.className=d.is_following?'btn-ghost':'btn-gold';btn.style.fontSize='.85rem';}
+    notify(d.is_following?'Following @'+username+' ✨':'Unfollowed @'+username,'info');
+  }catch(e){notify(e.message,'error');}
+}
+async function quickFollow(username,btnId){
+  if(!currentUser)return showAuth();
+  try{
+    const d=await api('POST','/api/users/'+username+'/follow',{});
+    const btn=qs('#'+btnId);if(btn){btn.textContent=d.is_following?'Unfollow':'Follow';btn.className=d.is_following?'btn-ghost':'btn-gold';btn.style.fontSize='.8rem';}
+    notify(d.is_following?'Following @'+username+'!':'Unfollowed @'+username,'info');
+  }catch(e){notify(e.message,'error');}
+}
+async function openFollowModal(username,type){
+  qs('#follow-modal-title').textContent=type==='followers'?'Followers':'Following';
+  qs('#follow-modal-list').innerHTML='<div style="text-align:center;padding:1rem"><div class="spinner" style="margin:0 auto"></div></div>';
+  qs('#follow-modal').style.display='flex';
+  try{
+    const users=await api('GET','/api/users/'+username+'/'+type);
+    if(!users.length){qs('#follow-modal-list').innerHTML='<div style="text-align:center;color:var(--muted);padding:1.5rem;font-style:italic">No wizards yet</div>';return;}
+    qs('#follow-modal-list').innerHTML=users.map(u=>{
+      const bid='flm-'+u.id+'-'+Math.random().toString(36).slice(2,5);
+      return `<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem"><div style="display:flex;align-items:center;gap:.5rem;cursor:pointer;flex:1;min-width:0" onclick="closeModal('follow-modal');navigate('user','${u.username}')"><div id="${bid}-av" class="avatar" style="width:36px;height:36px;font-size:.85rem;flex-shrink:0"></div><div style="min-width:0"><div class="font-cinzel" style="color:var(--gold);font-size:.8rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.display_name||u.username)}</div><div style="color:var(--muted);font-size:.68rem">@${u.username}</div></div></div>${currentUser&&currentUser.username!==u.username?'<button id="'+bid+'-btn" onclick="quickFollow(\''+u.username+'\',\''+bid+'-btn\')" class="'+(u.is_following?'btn-ghost':'btn-gold')+'" style="font-size:.75rem;padding:.25rem .6rem;flex-shrink:0">'+(u.is_following?'Unfollow':'Follow')+'</button>':''}</div>`;
+    }).join('');
+    users.forEach(u=>{document.querySelectorAll('[id$="-av"]').forEach(el=>{if(el.id.startsWith('flm-'+u.id+'-'))setAvEl(el,u,36);});});
+  }catch(e){qs('#follow-modal-list').innerHTML=errState(e.message);}
+}
+
+// ═══════════════════════════════════
+// DUEL ACTIONS (Structured Debate)
+// ═══════════════════════════════════
+async function checkPendingDuels(){
+  if(!currentUser) return;
+  try{
+    const duels=await api('GET','/api/duels/my/pending');
+    const badge=qs('#pending-badge');
+    if(badge){
+      if(duels.length>0){
+        badge.textContent=duels.length;
+        badge.style.display='inline-flex';
+      } else badge.style.display='none';
+    }
+  }catch(e){}
+}
+
+function openChallengeModal(spellId, content){
+  if(!currentUser) return showAuth();
+  challengeSpellId = spellId;
+  qs('#challenge-spell-preview').textContent = '"' + content + '"';
+  qs('#challenge-defender').value = '';
+  qs('#challenge-topic').value = content.substring(0, 120); // pre-fill topic
+  qs('#challenge-modal').style.display = 'flex';
+  setTimeout(() => qs('#challenge-defender').focus(), 100);
+}
+
+async function submitChallenge(){
+  const defender = qs('#challenge-defender').value.trim().replace('@','');
+  const topic = qs('#challenge-topic').value.trim();
+  if(!defender) return notify('Enter wizard username!', 'error');
+  if(!topic) return notify('Enter debate topic!', 'error');
+
+  try{
+    await api('POST', '/api/duels/challenge/' + challengeSpellId, {
+      defender_username: defender,
+      topic: topic,
+      challenger_stance: "FOR"
+    });
+    closeModal('challenge-modal');
+    notify('Duel Challenge sent to @' + defender + '! ⚔️', 'success');
+    if(currentPage === 'duels') renderDuelsPage();
+  } catch(e){ notify(e.message, 'error'); }
+}
+
+async function openAcceptModal(duelId, challengerSpellContent, topic) {
+  acceptDuelId = duelId;
+  acceptSelectedSpellId = null;
+  isNewSpellMode = false;  // ← ADD THIS
+
+  // Reset textarea
+  setTimeout(() => {
+    const ta = qs('#duel-new-spell');
+    if (ta) { ta.value = ''; updateBar('duel-new-spell','duel-spell-bar','duel-spell-count'); }
+  }, 100);
+  
+  // ... baaki code same
+
+  // Reset UI
+  qs('#accept-topic').textContent = topic || 'Duel Challenge';
+  qs('#accept-challenger-spell').textContent = '"' + challengerSpellContent + '"';
+  qs('#accept-submit-btn').disabled = true;
+  qs('#accept-submit-btn').style.opacity = '.5';
+  qs('#accept-spells-list').innerHTML = '<div style="text-align:center;padding:1rem"><div class="spinner" style="margin:0 auto"></div></div>';
+  qs('#accept-modal').style.display = 'flex';
+
+  // Load user's own spells
+  try {
+    const data = await api('GET', '/api/spells/user/' + currentUser.username + '?page=1&per_page=20');
+    if (!data.spells.length) {
+      qs('#accept-spells-list').innerHTML = `
+        <div style="text-align:center;padding:1.5rem;color:var(--muted)">
+          <div style="font-size:2rem;margin-bottom:.5rem">📜</div>
+          <div class="font-cinzel" style="margin-bottom:.4rem">No spells yet!</div>
+          <div style="font-size:.82rem;font-style:italic">Pehle koi spell cast karo, phir duel accept karo</div>
+          <button onclick="closeModal('accept-modal');openCastModal()" class="btn-gold mt-3" style="font-size:.8rem;margin-top:.75rem">✨ Cast a Spell First</button>
+        </div>`;
+      return;
+    }
+
+    qs('#accept-spells-list').innerHTML = data.spells.map(s => `
+      <div id="spell-option-${s.id}"
+        onclick="selectDuelSpell(${s.id})"
+        style="border:2px solid var(--border);border-radius:6px;padding:.75rem;cursor:pointer;transition:all .2s;background:rgba(0,0,0,.3)">
+        <div style="display:flex;align-items:flex-start;gap:.5rem">
+          <div style="width:16px;height:16px;border-radius:50%;border:2px solid var(--muted);flex-shrink:0;margin-top:2px;transition:all .2s" id="spell-radio-${s.id}"></div>
+          <div style="flex:1;min-width:0">
+            <p style="font-size:.88rem;color:var(--parchment);line-height:1.4">${esc(s.content)}</p>
+            <div style="font-size:.7rem;color:var(--muted);margin-top:.3rem">${timeAgo(s.created_at)} · ⭐ ${s.charms_count} · 💬 ${s.replies_count}</div>
+          </div>
+        </div>
+      </div>`).join('');
+
+  } catch(e) {
+    qs('#accept-spells-list').innerHTML = `<div style="text-align:center;color:var(--muted);padding:1rem">${esc(e.message)}</div>`;
+  }
+}
+
+// Spell select karo
+function selectDuelSpell(spellId) {
+  acceptSelectedSpellId = spellId;
+  isNewSpellMode = false;  // ← ADD THIS
+
+  // Clear new spell textarea
+  const ta = qs('#duel-new-spell');
+  if (ta) ta.value = '';
+
+  // Reset all
+  document.querySelectorAll('[id^="spell-option-"]').forEach(el => {
+    el.style.borderColor = 'var(--border)';
+    el.style.background  = 'rgba(0,0,0,.3)';
+  });
+  document.querySelectorAll('[id^="spell-radio-"]').forEach(el => {
+    el.style.borderColor = 'var(--muted)';
+    el.style.background  = 'transparent';
+  });
+
+  // Highlight selected
+  const option = qs('#spell-option-' + spellId);
+  const radio  = qs('#spell-radio-'  + spellId);
+  if (option) { option.style.borderColor = 'var(--gold)'; option.style.background = 'rgba(201,168,76,.08)'; }
+  if (radio)  { radio.style.borderColor  = 'var(--gold)'; radio.style.background  = 'var(--gold)'; }
+
+  const btn = qs('#accept-submit-btn');
+  if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+}
+async function submitAccept() {
+  try {
+    if (isNewSpellMode) {
+      // Pehle new spell cast karo phir duel accept karo
+      const content = qs('#duel-new-spell')?.value.trim();
+      if (!content) return notify('Apna argument likho!', 'error');
+
+      // Step 1 — New spell cast karo
+      const fd = new FormData();
+      fd.append('content', content);
+      const spellRes = await fetch('/api/spells/cast', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token },
+        body: fd
+      });
+      if (!spellRes.ok) {
+        const e = await spellRes.json();
+        throw new Error(e.detail);
+      }
+      const newSpell = await spellRes.json();
+
+      // Step 2 — Us spell se duel accept karo
+      await api('POST', '/api/duels/' + acceptDuelId + '/accept', {
+        defender_spell_id: newSpell.id
+      });
+
+    } else {
+      // Existing spell se accept karo
+      if (!acceptSelectedSpellId) return notify('Pehle apni spell select karo!', 'error');
+      await api('POST', '/api/duels/' + acceptDuelId + '/accept', {
+        defender_spell_id: acceptSelectedSpellId
+      });
+    }
+
+    closeModal('accept-modal');
+    acceptSelectedSpellId = null;
+    isNewSpellMode = false;
+    notify('Duel accepted! Community voting starts now! ⚔️', 'success');
+    if (currentPage === 'duels') renderDuelsPage();
+
+  } catch(e) { notify(e.message || 'Failed', 'error'); }
+}
+async function submitDecline(){
+  try{
+    await api('POST', '/api/duels/' + acceptDuelId + '/decline');
+    closeModal('accept-modal');
+    notify('Duel declined.', 'info');
+    if(currentPage === 'duels') renderDuelsPage();
+  } catch(e){ notify(e.message, 'error'); }
+}
+
+async function quickDecline(duelId){
+  try{
+    await api('POST', '/api/duels/' + duelId + '/decline');
+    notify('Duel declined.', 'info');
+    if(currentPage === 'duels') renderDuelsPage();
+  } catch(e){ notify(e.message, 'error'); }
+}
+
+async function castVote(duelId, votedFor){
+  if(!currentUser) return showAuth();
+  const reason = prompt("Why are you voting this side? (optional)");
+  try{
+    await api('POST', '/api/duels/' + duelId + '/vote', {
+      voted_for: votedFor,
+      reason: reason || null
+    });
+    notify('Vote cast successfully!', 'success');
+    const updated = await api('GET', '/api/duels/' + duelId);
+    const card = qs('#duel-card-' + duelId);
+    if(card) card.outerHTML = duelCard(updated);
+  } catch(e){ notify(e.message, 'error'); }
+}
+// ═══════════════════════════════════
+// MODALS
+// ═══════════════════════════════════
+function openCastModal(){if(!currentUser)return showAuth();qs('#cast-modal').style.display='flex';setTimeout(()=>qs('#cast-content').focus(),100);}
+function closeModal(id){qs('#'+id).style.display='none';}
+function previewCastImg(inp){if(!inp.files[0])return;const r=new FileReader();r.onload=e=>{qs('#cast-preview-img').src=e.target.result;qs('#cast-img-preview').style.display='block';};r.readAsDataURL(inp.files[0]);}
+function removeCastImg(){qs('#cast-image').value='';qs('#cast-img-preview').style.display='none';}
+
+// ═══════════════════════════════════
+// SEARCH DROPDOWN
+// ═══════════════════════════════════
+let _st;
+function debounceSearch(q){clearTimeout(_st);_st=setTimeout(()=>dropdownSearch(q),280);}
+async function dropdownSearch(q){
+  const p=qs('#search-results');if(!q.trim()){p.style.display='none';return;}
+  try{
+    const [users,spellsData]=await Promise.all([
+      api('GET','/api/users/search/wizards?q='+encodeURIComponent(q)),
+      api('GET','/api/spells/search/spells?q='+encodeURIComponent(q)+'&per_page=3').catch(()=>({spells:[]}))
+    ]);
+    if(!users.length&&!spellsData.spells.length){p.style.display='none';return;}
+    p.style.display='block';let html='';
+    if(users.length){
+      html+='<div style="padding:.35rem .75rem;color:var(--muted);font-size:.65rem;font-family:Cinzel,serif;letter-spacing:.1em;border-bottom:1px solid var(--border)">WIZARDS</div>';
+      html+=users.slice(0,3).map(u=>`<div style="display:flex;align-items:center;gap:.5rem;padding:.45rem .75rem;cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background=''" onclick="qs('#search-results').style.display='none';qs('#search-input').value='';navigate('user','${u.username}')"><div class="avatar" style="width:26px;height:26px;font-size:.65rem;flex-shrink:0">${u.profile_picture?'<img src="'+u.profile_picture+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>': (u.display_name?.[0]||u.username[0]).toUpperCase()}</div><div><div class="font-cinzel" style="color:var(--gold);font-size:.75rem">${esc(u.display_name||u.username)}</div><div style="color:var(--muted);font-size:.63rem">@${u.username}${u.house?' · '+u.house:''}</div></div></div>`).join('');
+    }
+    if(spellsData.spells&&spellsData.spells.length){
+      html+='<div style="padding:.35rem .75rem;color:var(--muted);font-size:.65rem;font-family:Cinzel,serif;letter-spacing:.1em;border-top:1px solid var(--border);border-bottom:1px solid var(--border)">SPELLS</div>';
+      html+=spellsData.spells.slice(0,2).map(s=>`<div style="padding:.45rem .75rem;cursor:pointer" onmouseover="this.style.background='rgba(255,255,255,.05)'" onmouseout="this.style.background=''" onclick="qs('#search-results').style.display='none';qs('#search-input').value='';navigate('spell',${s.id})"><div style="color:var(--gold);font-size:.72rem;margin-bottom:2px">@${s.author.username}</div><div style="color:var(--parchment);font-size:.78rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.content)}</div></div>`).join('');
+    }
+    html+='<div style="border-top:1px solid var(--border);padding:.45rem .75rem"><button onclick="navigateSearch(\''+escA(q)+'\')" style="width:100%;background:none;border:none;color:var(--gold);cursor:pointer;font-family:Cinzel,serif;font-size:.73rem;text-align:center;padding:.2rem">See all results for "'+esc(q)+'" →</button></div>';
+    p.innerHTML=html;
+  }catch(e){console.error(e);}
+}
+
+// ═══════════════════════════════════
+// RIGHT PANEL
+// ═══════════════════════════════════
+async function loadSuggested(){
+  try{
+    const data=await api('GET','/api/spells/explore?page=1&per_page=10');
+    const seen=new Set(),users=[];
+    data.spells.forEach(s=>{if(!seen.has(s.author.id)&&(!currentUser||s.author.id!==currentUser.id)){seen.add(s.author.id);users.push(s.author);}});
+    const p=qs('#suggested-list');
+    if(!users.length){p.innerHTML='<div style="color:var(--muted);font-size:.75rem;text-align:center">No suggestions yet</div>';return;}
+    p.innerHTML=users.slice(0,4).map(u=>{
+      const bid='sug-'+u.id;
+      return `<div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.6rem"><div style="display:flex;align-items:center;gap:.5rem;cursor:pointer;flex:1;min-width:0" onclick="navigate('user','${u.username}')"><div id="${bid}-av" class="avatar" style="width:32px;height:32px;font-size:.78rem;flex-shrink:0"></div><div style="min-width:0"><div class="font-cinzel" style="color:var(--gold);font-size:.75rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(u.display_name||u.username)}</div><div style="color:var(--muted);font-size:.65rem">@${u.username}</div></div></div><button id="${bid}-btn" onclick="quickFollow('${u.username}','${bid}-btn')" class="${u.is_following?'btn-ghost':'btn-gold'}" style="font-size:.72rem;padding:.25rem .55rem;flex-shrink:0">${u.is_following?'Unfollow':'Follow'}</button></div>`;
+    }).join('');
+    users.slice(0,4).forEach(u=>{const el=qs('#sug-'+u.id+'-av');if(el)setAvEl(el,u,32);});
+  }catch(e){}
+}
+async function loadStats(){
+  try{
+    const s=await api('GET','/api/stats');
+    qs('#stats-panel').innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span>🧙 Wizards</span><strong style="color:var(--gold)">${s.wizards}</strong></div><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span>✨ Spells</span><strong style="color:var(--gold)">${s.spells_cast}</strong></div><div style="display:flex;justify-content:space-between;margin-bottom:.4rem"><span>⭐ Charms</span><strong style="color:var(--gold)">${s.charms}</strong></div><div style="display:flex;justify-content:space-between"><span>💬 Replies</span><strong style="color:var(--gold)">${s.replies}</strong></div>`;
+  }catch(e){}
+}
+
+// ═══════════════════════════════════
+// AVATAR
+// ═══════════════════════════════════
+function setAv(id,user,size){const el=qs('#'+id);if(el)setAvEl(el,user,size);}
+function setAvEl(el,user,size=42){
+  if(!el)return;el.style.width=size+'px';el.style.height=size+'px';el.style.fontSize=Math.max(size*.4,12)+'px';
+  if(user?.profile_picture)el.innerHTML='<img src="'+user.profile_picture+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>';
+  else el.textContent=(user?.display_name?.[0]||user?.username?.[0]||'?').toUpperCase();
+}
+
+// ═══════════════════════════════════
+// NOTIFY
+// ═══════════════════════════════════
+let _nt;
+function notify(msg,type='info'){
+  clearTimeout(_nt);
+  const cols={success:'var(--emerald)',error:'var(--crimson)',info:'var(--gold-dark)'};
+  const icons={success:'✨',error:'⚠️',info:'🔮'};
+  qs('#notification').innerHTML='<div class="card p-3" style="display:flex;align-items:flex-start;gap:.5rem;border-color:'+cols[type]+';animation:fadeIn .25s ease"><span>'+icons[type]+'</span><span style="font-size:.88rem;font-style:italic">'+msg+'</span></div>';
+  _nt=setTimeout(()=>{qs('#notification').innerHTML='';},4000);
+}
+
+// ═══════════════════════════════════
+// CHAR BAR
+// ═══════════════════════════════════
+function updateBar(taId,barId,cntId){
+  const ta=qs('#'+taId),bar=qs('#'+barId),cnt=qs('#'+cntId);if(!ta)return;
+  const len=ta.value.length,pct=(len/280)*100;if(cnt)cnt.textContent=len+'/280';
+  if(bar){bar.style.width=pct+'%';bar.style.background=pct>90?'var(--crimson)':pct>70?'var(--amber)':'var(--gold-dark)';}
+}
+
+// ═══════════════════════════════════
+// UTILS
+// ═══════════════════════════════════
+function qs(s){return document.querySelector(s);}
+function esc(s){return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):''; }
+function escA(s){return s?String(s).replace(/'/g,"\\'").replace(/\\/g,'\\\\').substring(0,100):'';}
+function timeAgo(d){
+  const diff=Math.floor((new Date()-new Date(d))/1000);
+  if(diff<60)return diff+'s';if(diff<3600)return Math.floor(diff/60)+'m';
+  if(diff<86400)return Math.floor(diff/3600)+'h';if(diff<604800)return Math.floor(diff/86400)+'d';
+  return new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+function emptyState(icon,title,sub,navTo,navLabel){
+  return '<div style="text-align:center;padding:3rem 1rem;color:var(--muted)"><div style="font-size:2.5rem;margin-bottom:.75rem">'+icon+'</div><div class="font-cinzel" style="margin-bottom:.25rem">'+title+'</div>'+(sub?'<div style="font-size:.85rem;font-style:italic">'+sub+'</div>':'')+(navTo?'<button onclick="navigate(\''+navTo+'\')" class="btn-ghost" style="margin-top:1rem">'+navLabel+'</button>':'')+'</div>';
+}
+function errState(msg){return '<div style="text-align:center;padding:2rem;color:var(--muted)"><div style="font-size:1.5rem;margin-bottom:.5rem">⚠️</div><div style="font-size:.85rem">'+esc(msg)+'</div></div>';}
+// ═══════════════════════════════════
+// API HELPER (FIXED)
+// ═══════════════════════════════════
+async function api(method, url, body=null) {
+  const opts = {method, headers: {}};
+  if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+  if (body && method !== 'GET') {
+    opts.headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(body);
+  }
+  const res = await fetch(url, opts);
+  if (!res.ok) {
+    const e = await res.json().catch(() => ({}));
+    throw new Error(e.detail || 'HTTP ' + res.status);
+  }
+  return res.json();
+}
+
+</script>
+</body>
+</html>
