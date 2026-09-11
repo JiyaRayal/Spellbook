@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 80" width="200" height="80">
+  <defs>
+    <linearGradient id="stickGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3d2000"/>
+      <stop offset="30%" stop-color="#8b5e1a"/>
+      <stop offset="50%" stop-color="#c9a84c"/>
+      <stop offset="70%" stop-color="#8b5e1a"/>
+      <stop offset="100%" stop-color="#3d2000"/>
+    </linearGradient>
+    <linearGradient id="bindGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffd700"/>
+      <stop offset="50%" stop-color="#c9a84c"/>
+      <stop offset="100%" stop-color="#8b6914"/>
+    </linearGradient>
+  </defs>
+  <line x1="155" y1="42" x2="200" y2="70" stroke="#5c3d0a" stroke-width="1.2" opacity="0.9"/>
+  <line x1="155" y1="42" x2="199" y2="65" stroke="#6b4a10" stroke-width="1.1" opacity="0.9"/>
+  <line x1="155" y1="42" x2="198" y2="60" stroke="#7a5518" stroke-width="1.1" opacity="0.9"/>
+  <line x1="155" y1="42" x2="196" y2="55" stroke="#8b6020" stroke-width="1.0" opacity="0.9"/>
+  <line x1="155" y1="40" x2="200" y2="42" stroke="#8b6914" stroke-width="1.2" opacity="0.95"/>
+  <line x1="155" y1="40" x2="200" y2="39" stroke="#9a7820" stroke-width="1.1" opacity="0.95"/>
+  <line x1="155" y1="40" x2="199" y2="36" stroke="#a08228" stroke-width="1.1" opacity="0.9"/>
+  <line x1="155" y1="38" x2="197" y2="29" stroke="#b49638" stroke-width="1.0" opacity="0.85"/>
+  <line x1="155" y1="38" x2="195" y2="25" stroke="#bca040" stroke-width="0.9" opacity="0.8"/>
+  <line x1="155" y1="38" x2="192" y2="22" stroke="#c4aa48" stroke-width="0.9" opacity="0.8"/>
+  <line x1="155" y1="38" x2="188" y2="18" stroke="#c9a84c" stroke-width="0.8" opacity="0.75"/>
+  <ellipse cx="152" cy="40" rx="6" ry="10" fill="url(#bindGrad)"/>
+  <rect x="15" y="36" width="142" height="8" rx="4" fill="url(#stickGrad)"/>
+  <ellipse cx="18" cy="40" rx="6" ry="5" fill="#5c3d0a"/>
+  <ellipse cx="18" cy="40" rx="4" ry="3.5" fill="#8b5e1a"/>
+  <text x="60" y="43" font-family="serif" font-size="5" fill="#ffd700" opacity="0.85" text-anchor="middle" font-style="italic" letter-spacing="1">NIMBUS 2000</text>
+  <rect x="38" y="35" width="4" height="10" rx="2" fill="url(#bindGrad)" opacity="0.8"/>
+  <rect x="100" y="35" width="4" height="10" rx="2" fill="url(#bindGrad)" opacity="0.8"/>
+  <rect x="135" y="35" width="3" height="10" rx="1.5" fill="url(#bindGrad)" opacity="0.9"/>
+</svg>

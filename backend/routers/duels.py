@@ -222,7 +222,7 @@ async def challenge(
     )
     db.add(duel); db.commit(); db.refresh(duel)
 
-    # Defender ko notification bhejo
+    # notification sending to defender
     notif = Notification(
         user_id = defender.id,
         type    = "duel_challenge",
@@ -258,7 +258,7 @@ async def accept(
     duel.ends_at           = datetime.now(timezone.utc) + timedelta(minutes=5)
     db.commit()
 
-    # Challenger ko batao ki challenge accept ho gaya
+    # informing challenger that challange has been accepted
     notif = Notification(
         user_id = duel.challenger_id,
         type    = "duel_accepted",
@@ -405,7 +405,7 @@ async def force_complete(
     if duel.status != "active":
         raise HTTPException(400, "Duel active nahi hai")
 
-    # Manually complete karo
+    
     duel.ends_at = datetime.now(timezone.utc)
     db.commit()
     check_and_complete_duels(db)

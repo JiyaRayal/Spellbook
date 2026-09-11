@@ -10,7 +10,7 @@ from backend.core.config import settings
 from backend.core.database import engine, Base
 from backend.core.middleware import RequestLoggingMiddleware, RateLimitMiddleware
 from backend.models import user, spell  # noqa
-from backend.routers import auth, users, spells, health , duels
+from backend.routers import auth, users, spells, health , duels , notification , prophet
 
 # Logging
 logging.basicConfig(
@@ -60,6 +60,8 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(spells.router)
 app.include_router(duels.router)
+app.include_router(notification.router)
+app.include_router(prophet.router)
 
 # Serve frontend HTML directly — no Jinja2 templating needed
 @app.get("/{full_path:path}", response_class=HTMLResponse, include_in_schema=False)

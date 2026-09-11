@@ -20,7 +20,7 @@ class User(Base):
     profile_picture = Column(String(500), nullable=True)
     house = Column(String(50), nullable=True)
     is_active = Column(Boolean, default=True)
-    # ── Duel Stats (ADD THESE 3 LINES) ──
+    # ── Duel Stats 
     duel_wins   = Column(Integer, default=0)
     duel_losses = Column(Integer, default=0)
     is_champion = Column(Boolean, default=False)

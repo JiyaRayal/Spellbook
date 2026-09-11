@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" width="120" height="100">
+  <defs>
+    <radialGradient id="owlBody" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#f5e6c8"/>
+      <stop offset="60%" stop-color="#d4c49a"/>
+      <stop offset="100%" stop-color="#a08c5a"/>
+    </radialGradient>
+    <radialGradient id="eyeGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffd700"/>
+      <stop offset="70%" stop-color="#c9a84c"/>
+      <stop offset="100%" stop-color="#8b6914"/>
+    </radialGradient>
+  </defs>
+  <path d="M 20 52 Q 5 35 2 18 Q 8 20 12 28 Q 10 15 16 10 Q 20 22 18 32 Q 22 16 28 12 Q 30 26 26 36 Q 32 22 40 20 Q 38 34 32 44 Z" fill="#c8a86a" opacity="0.92"/>
+  <path d="M 100 52 Q 115 35 118 18 Q 112 20 108 28 Q 110 15 104 10 Q 100 22 102 32 Q 98 16 92 12 Q 90 26 94 36 Q 88 22 80 20 Q 82 34 88 44 Z" fill="#c8a86a" opacity="0.92"/>
+  <ellipse cx="60" cy="62" rx="24" ry="28" fill="url(#owlBody)"/>
+  <path d="M 44 58 Q 60 54 76 58" stroke="#c9a84c" stroke-width="0.8" fill="none" opacity="0.4"/>
+  <path d="M 42 65 Q 60 61 78 65" stroke="#c9a84c" stroke-width="0.8" fill="none" opacity="0.4"/>
+  <path d="M 42 72 Q 60 68 78 72" stroke="#c9a84c" stroke-width="0.8" fill="none" opacity="0.4"/>
+  <ellipse cx="60" cy="38" rx="20" ry="19" fill="url(#owlBody)"/>
+  <path d="M 47 22 Q 44 12 48 8 Q 51 14 50 22 Z" fill="#c8a86a"/>
+  <path d="M 73 22 Q 76 12 72 8 Q 69 14 70 22 Z" fill="#c8a86a"/>
+  <path d="M 60 28 Q 42 26 40 38 Q 40 50 60 52 Q 80 50 80 38 Q 78 26 60 28 Z" fill="#e8d5a3" opacity="0.6"/>
+  <circle cx="51" cy="37" r="7.5" fill="#1a0a00" opacity="0.9"/>
+  <circle cx="51" cy="37" r="6.5" fill="url(#eyeGlow)"/>
+  <circle cx="51" cy="37" r="3.5" fill="#0d0500"/>
+  <circle cx="49" cy="35" r="1.5" fill="white" opacity="0.9"/>
+  <circle cx="69" cy="37" r="7.5" fill="#1a0a00" opacity="0.9"/>
+  <circle cx="69" cy="37" r="6.5" fill="url(#eyeGlow)"/>
+  <circle cx="69" cy="37" r="3.5" fill="#0d0500"/>
+  <circle cx="67" cy="35" r="1.5" fill="white" opacity="0.9"/>
+  <path d="M 57 42 Q 60 47 63 42 Q 60 40 57 42 Z" fill="#c9a84c"/>
+  <path d="M 50 88 Q 46 92 43 95 Q 44 96 46 94 Q 47 97 48 97 Q 49 95 50 92 Q 52 95 51 98 Q 53 95 55 93 Q 53 90 50 88 Z" fill="#8b6914"/>
+  <path d="M 70 88 Q 74 92 77 95 Q 76 96 74 94 Q 73 97 72 97 Q 71 95 70 92 Q 68 95 69 98 Q 67 95 65 93 Q 67 90 70 88 Z" fill="#8b6914"/>
+  <rect x="47" y="84" width="6" height="6" rx="2" fill="#a08c5a"/>
+  <rect x="67" y="84" width="6" height="6" rx="2" fill="#a08c5a"/>
+</svg>

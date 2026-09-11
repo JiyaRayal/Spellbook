@@ -152,8 +152,7 @@ async def feed(
     db: Session = Depends(get_db),
     cu: User = Depends(get_current_user)
 ):
-    # Sabke spells fetch karo — sab dikhenge
-    # lekin scoring se order decide hoga
+    # sabke spells fetch karo — sab dikhenge lekin scoring se order decide hoga
     all_spells = (
         _q(db)
         .order_by(desc(Spell.created_at))
@@ -167,7 +166,7 @@ async def feed(
         score = calculate_score(spell, cu)
         scored.append((score, spell.created_at, spell))
 
-    # Score se sort karo, same score mein time se
+    # score se sort karo, same score mein time se
     scored.sort(key=lambda x: (x[0], x[1]), reverse=True)
 
     # Paginate

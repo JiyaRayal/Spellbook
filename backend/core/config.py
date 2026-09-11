@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Spellbook"
     DEBUG: bool = True
     UPLOAD_DIR: str = "frontend/static/uploads"
+    ANTHROPIC_API_KEY: str = ""  
 
     class Config:
         env_file = ".env"
