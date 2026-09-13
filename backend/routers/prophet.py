@@ -137,12 +137,12 @@ async def generate_with_claude(
     top_spells: list,
     stats: dict,
     duel_highlights: list
-) -> dict:
+) -> tuple[dict, bool]:
     """Claude se Daily Prophet generate karo"""
 
     if not settings.ANTHROPIC_API_KEY:
         # API key nahi hai toh mock response do
-        return generate_mock_prophet(top_spells, stats, duel_highlights)
+        return generate_mock_prophet(top_spells, stats, duel_highlights), False
 
     try:
         client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
@@ -222,11 +222,11 @@ Respond ONLY with valid JSON, no markdown, no extra text:
         elif "```" in response_text:
             response_text = response_text.split("```")[1].split("```")[0].strip()
 
-        return json.loads(response_text)
+        return json.loads(response_text), True
 
     except Exception as e:
         print(f"Claude API error: {e}")
-        return generate_mock_prophet(top_spells, stats, duel_highlights)
+        return generate_mock_prophet(top_spells, stats, duel_highlights), False
 
 def generate_mock_prophet(top_spells, stats, duel_highlights):
     """Agar API key nahi hai ya error aaye toh mock newspaper"""
@@ -279,7 +279,7 @@ async def get_today_prophet(
     duel_highlights = get_duel_highlights(db)
 
     # Claude se generate karo
-    newspaper = await generate_with_claude(top_spells, stats, duel_highlights)
+    newspaper, ai_powered = await generate_with_claude(top_spells, stats, duel_highlights)
 
     # Response banao
     result = {
@@ -290,7 +290,7 @@ async def get_today_prophet(
         "stats"           : stats,
         "duel_highlights" : duel_highlights,
         "generated_at"    : datetime.now().isoformat(),
-        "ai_powered"      : bool(settings.ANTHROPIC_API_KEY)
+        "ai_powered"      : ai_powered
     }
 
     # Cache mein save karo

@@ -13,6 +13,12 @@
     .font-cinzel{font-family:'Cinzel',serif}
     ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg-dark)}::-webkit-scrollbar-thumb{background:var(--gold-dark);border-radius:3px}
     .card{background:linear-gradient(135deg,var(--bg-card) 0%,var(--bg-card2) 100%);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+    .prophet-paper{background:linear-gradient(135deg,rgba(245,230,200,.98),rgba(232,213,163,.96));color:var(--ink);border:1px solid var(--gold);box-shadow:0 8px 30px rgba(0,0,0,.45);position:relative;overflow:hidden}
+    .prophet-paper:before{content:'';position:absolute;inset:10px;border:1px solid rgba(139,105,20,.35);pointer-events:none}
+    .prophet-ink{color:var(--ink)}.prophet-rule{height:1px;background:rgba(26,10,0,.35);margin:.75rem 0}.prophet-section{border-top:3px double rgba(26,10,0,.55);padding-top:.75rem}
+    .prophet-section-title{font-family:'Cinzel',serif;color:var(--crimson);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900}
+    .prophet-stat{border:1px solid rgba(139,105,20,.45);background:rgba(255,255,255,.2);padding:.65rem;text-align:center}
+    @media(max-width:600px){.prophet-paper{margin:0 -.25rem}.prophet-paper:before{inset:6px}.prophet-headline{font-size:1.7rem!important}.prophet-grid{grid-template-columns:1fr!important}.prophet-stats{grid-template-columns:repeat(2,1fr)!important}}
     .card-hover{transition:all .2s ease}.card-hover:hover{border-color:var(--gold-dark);box-shadow:0 6px 30px rgba(0,0,0,.6),0 0 15px rgba(201,168,76,.1)}
     .btn-gold{background:linear-gradient(135deg,var(--gold-dark) 0%,var(--gold) 50%,var(--gold-dark) 100%);color:var(--ink);font-family:'Cinzel',serif;font-weight:600;letter-spacing:.05em;border:none;cursor:pointer;transition:all .2s;padding:.55rem 1.4rem;border-radius:4px;font-size:.85rem}
     .btn-gold:hover{filter:brightness(1.15);transform:translateY(-1px);box-shadow:0 4px 15px rgba(201,168,76,.4)}
@@ -48,7 +54,7 @@
     .mb-3{margin-bottom:.75rem}.mb-4{margin-bottom:1rem}.mt-2{margin-top:.5rem}.mt-auto{margin-top:auto}
     .text-center{text-align:center}.relative{position:relative}.absolute{position:absolute}
     #mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(13,10,5,.97);border-top:1px solid var(--border);z-index:100;padding:.5rem 0}
-    @media(max-width:900px){#sidebar{display:none}#right-panel{display:none}#mobile-nav{display:flex}body{padding-bottom:60px}}
+    @media(max-width:900px){#sidebar{display:none}#right-panel{display:none}#mobile-nav{display:flex}body{padding-bottom:60px;overflow-x:hidden}}
 
     /* ══════════════════════════════════════
        MAGICAL BACKGROUND ANIMATIONS
@@ -428,15 +434,15 @@
       <div class="nav-link" id="nav-home"    onclick="navigate('home')">       <span>🏰</span> Great Hall</div>
       <div class="nav-link" id="nav-explore" onclick="navigate('explore')">    <span>🔭</span> Explore</div>
       <div class="nav-link" id="nav-search"  onclick="navigate('search','')">  <span>🔍</span> Search</div>
-      <div class="nav-link" id="nav-duels"   onclick="navigate('duels')">
       <div class="nav-link" id="nav-notifications" onclick="navigate('notifications')" style="display:none">
   <span>🔔</span> Notifications
   <span id="notif-badge" style="display:none;background:var(--crimson);color:white;border-radius:50%;width:18px;height:18px;font-size:.65rem;margin-left:auto;align-items:center;justify-content:center;font-family:Cinzel,serif">0</span>
 </div>
-      
+      <div class="nav-link" id="nav-duels" onclick="navigate('duels')" style="display:none">
         <span>⚔️</span> Spell Duels
         <span id="pending-badge" style="display:none;background:var(--crimson);color:white;border-radius:50%;width:18px;height:18px;font-size:.65rem;margin-left:auto;align-items:center;justify-content:center">!</span>
       </div>
+      <div class="nav-link" id="nav-prophet" onclick="navigate('prophet')"><span>📰</span> Daily Prophet</div>
       <div class="nav-link" id="nav-profile"  onclick="navigate('profile')"  style="display:none"><span>👤</span> My Profile</div>
       <div class="nav-link" id="nav-settings" onclick="navigate('settings')" style="display:none"><span>⚙</span> Settings</div>
     </nav>
@@ -509,7 +515,8 @@
   <button onclick="navigate('home')"    style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">🏰</span>Hall</button>
   <button onclick="navigate('explore')" style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">🔭</span>Explore</button>
   <button onclick="openCastModal()"    style="display:flex;flex-direction:column;align-items:center;color:var(--gold);background:none;border:none;cursor:pointer"><span style="font-size:1.8rem">✨</span></button>
-  <button onclick="navigate('duels')"  style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">⚔️</span>Duels</button>
+  <button id="mob-duels-btn" onclick="navigate('duels')" style="display:none;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">⚔️</span>Duels</button>
+  <button onclick="navigate('prophet')" style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">📰</span>Prophet</button>
   <button id="mob-login-btn"   onclick="showAuth()"          style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">🔐</span>Login</button>
   <button id="mob-profile-btn" onclick="navigate('profile')" style="display:none;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">👤</span>Me</button>
 </nav>
@@ -648,6 +655,8 @@ function updateUI(){
   qs('#header-avatar-wrap').style.display=in_?'block':'none';
   qs('#nav-profile').style.display=in_?'flex':'none';
   qs('#nav-settings').style.display=in_?'flex':'none';
+  qs('#nav-duels').style.display=in_?'flex':'none';
+  qs('#mob-duels-btn').style.display=in_?'flex':'none';
   qs('#mob-profile-btn').style.display=in_?'flex':'none';
   qs('#mob-login-btn').style.display=in_?'none':'flex';
   qs('#nav-notifications').style.display = in_ ? 'flex' : 'none';
@@ -668,8 +677,9 @@ if (in_) {
 // NAVIGATION
 // ═══════════════════════════════════
 function navigate(page,param=null){
+  if(page==='duels'&&!currentUser){showAuth();return;}
   currentPage=page;
-  ['home','explore','search','duels','profile','settings'].forEach(p=>{const el=qs('#nav-'+p);if(el)el.classList.toggle('active',p===page);});
+  ['home','explore','search','duels','prophet','profile','settings'].forEach(p=>{const el=qs('#nav-'+p);if(el)el.classList.toggle('active',p===page);});
   qs('#page-container').innerHTML='<div style="display:flex;justify-content:center;padding:4rem"><div class="spinner"></div></div>';
   if(page==='home')renderFeed();
   else if(page==='explore')renderExplore();
@@ -679,8 +689,82 @@ function navigate(page,param=null){
   else if(page==='user')renderProfile(param);
   else if(page==='spell')renderSpellDetail(param);
   else if(page==='settings')renderSettings();
+  else if(page==='prophet')renderProphetPage();
   else if (page === 'notifications') renderNotificationsPage();
   else renderFeed();
+}
+
+  // ═══════════════════════════════════
+// PAGE: DAILY PROPHET
+// ═══════════════════════════════════
+async function renderProphetPage() {
+  const c=qs('#page-container');
+  c.innerHTML='<div style="display:flex;justify-content:center;padding:4rem"><div class="spinner"></div></div>';
+  try {
+    const data=await api('GET','/api/prophet/today');
+    renderProphetEdition(data);
+  } catch(e) {
+    c.innerHTML=`<div class="fade-in">${errState('The Daily Prophet could not be delivered: '+e.message)}<div class="text-center"><button onclick="renderProphetPage()" class="btn-gold">Try Again 🪄</button></div></div>`;
+  }
+}
+
+async function refreshProphetEdition(button) {
+  if (button) { button.disabled=true; button.textContent='Refreshing...'; }
+  try {
+    const data=await api('GET','/api/prophet/refresh');
+    renderProphetEdition(data);
+    notify('A fresh Prophet edition has arrived! 📰','success');
+  } catch(e) {
+    if (button) { button.disabled=false; button.textContent='Refresh Edition'; }
+    notify('The owl delivery failed: '+e.message,'error');
+  }
+}
+
+function renderProphetEdition(data) {
+  const c=qs('#page-container'), n=data.newspaper||{}, stats=data.stats||{}, topSpells=data.top_spells||[], duels=data.duel_highlights||[];
+  const aiLabel=data.ai_powered?'✨ AI-generated edition':'✒️ Editor fallback edition';
+  const story=(section,icon)=>section?`<section class="prophet-section"><div class="prophet-section-title">${icon} ${esc(section.title||'Untitled')}</div><p style="margin-top:.55rem;line-height:1.6;font-size:.9rem">${esc(section.content||'No report was filed.')}</p></section>`:'';
+  const stat=(label,value)=>`<div class="prophet-stat"><div style="font-family:'Cinzel',serif;font-weight:900;font-size:1.2rem">${esc(String(value??0))}</div><div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;margin-top:.25rem">${label}</div></div>`;
+  c.innerHTML=`
+    <div class="fade-in">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.75rem 0 1rem;flex-wrap:wrap">
+        <div><div class="font-cinzel" style="color:var(--gold);font-size:1.25rem;font-weight:700">📰 Daily Prophet</div><div style="color:var(--muted);font-size:.78rem;font-style:italic">The latest news from the Spellbook wizarding world</div></div>
+        <button onclick="refreshProphetEdition(this)" class="btn-gold">Refresh Edition</button>
+      </div>
+      <article class="prophet-paper p-6">
+        <header style="position:relative;text-align:center;border-bottom:3px double rgba(26,10,0,.55);padding-bottom:1rem;margin-bottom:1.25rem">
+          <div style="font-family:'IM Fell English',serif;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase">The</div>
+          <div style="font-family:'IM Fell English',serif;font-size:2.4rem;line-height:1;color:var(--crimson);font-weight:400">Daily Prophet</div>
+          <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;margin-top:.65rem"><span>${esc(data.date||'Today')}</span><span>${esc(data.edition||'Special Edition')}</span><span style="color:var(--crimson);font-weight:700">${aiLabel}</span></div>
+        </header>
+        <div style="position:relative;text-align:center;max-width:780px;margin:0 auto 1.5rem">
+          <h1 class="prophet-headline" style="font-family:'IM Fell English',serif;color:var(--crimson);font-size:2.35rem;line-height:1.08;font-weight:400">${esc(n.headline||'News from the Wizarding World')}</h1>
+          <p style="font-size:1rem;line-height:1.65;font-style:italic;margin-top:.75rem">${esc(n.headline_summary||'The latest Spellbook happenings are being reported.')}</p>
+        </div>
+        <div class="prophet-grid" style="position:relative;display:grid;grid-template-columns:1.25fr 1fr;gap:1.5rem">
+          <div class="space-y-4">
+            ${story(n.top_story,'✦')}
+            ${story(n.duel_report,'⚔️')}
+            ${story(n.house_news,'🏰')}
+          </div>
+          <div class="space-y-4">
+            ${story(n.wizarding_gossip,'✒️')}
+            <section class="prophet-section"><div class="prophet-section-title">📊 Statistics Summary</div><div class="prophet-stats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.75rem">
+              ${stat('Spells',stats.total_spells)}${stat('Charms',stats.total_charms)}${stat('Wizards',stats.total_wizards)}${stat('Active Duels',stats.active_duels)}
+            </div><p style="font-size:.78rem;line-height:1.5;margin-top:.65rem;font-style:italic">${esc(n.stats_summary||'The numbers tell their own tale.')}</p></section>
+            <section class="prophet-section"><div class="prophet-section-title">🖋 Editor's Note</div><p style="margin-top:.55rem;line-height:1.6;font-size:.9rem;font-style:italic">${esc(n.editor_note||'Keep your wand at the ready.')}</p></section>
+          </div>
+        </div>
+        <section class="prophet-section" style="position:relative;margin-top:1.5rem"><div class="prophet-section-title">📜 Top Spells</div>
+          ${topSpells.length?`<div class="space-y-3" style="margin-top:.75rem">${topSpells.map((s,i)=>`<div style="border-bottom:1px solid rgba(26,10,0,.2);padding-bottom:.65rem"><div style="display:flex;justify-content:space-between;gap:.75rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em"><span><strong>${i+1}.</strong> ${esc(s.author||'Unknown wizard')} · ${esc(s.house||'Unknown')}</span><span style="white-space:nowrap">⭐ ${s.charms||0} · 💬 ${s.replies||0}</span></div><div style="font-size:.86rem;line-height:1.5;margin-top:.25rem">${esc(s.content||'')}</div></div>`).join('')}</div>`:'<p style="font-size:.85rem;margin-top:.65rem;font-style:italic">No spells have made the front page yet.</p>'}
+        </section>
+        <section class="prophet-section" style="position:relative;margin-top:1.5rem"><div class="prophet-section-title">⚔️ Duel Highlights</div>
+          ${duels.length?`<div class="prophet-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:.75rem">${duels.map(d=>`<div style="border:1px solid rgba(26,10,0,.25);padding:.75rem;font-size:.8rem"><div style="font-family:'Cinzel',serif;font-weight:700;color:var(--crimson);font-size:.7rem">${esc(d.status||'Duel')}</div><div style="font-weight:700;margin:.35rem 0">${esc(d.topic||'Unnamed debate')}</div><div>${esc(d.challenger||'Challenger')} <strong>vs</strong> ${esc(d.defender||'Defender')}</div><div style="margin-top:.45rem;font-size:.72rem">Votes: ${d.challenger_votes||0} - ${d.defender_votes||0}</div>${d.winner?`<div style="color:var(--crimson);font-weight:700;margin-top:.35rem">Winner: ${esc(d.winner)}</div>`:''}</div>`).join('')}</div>`:'<p style="font-size:.85rem;margin-top:.65rem;font-style:italic">The dueling grounds are quiet today.</p>'}
+        </section>
+        <footer style="position:relative;text-align:center;border-top:1px solid rgba(26,10,0,.3);margin-top:1.5rem;padding-top:.75rem;font-size:.68rem;font-style:italic">Generated ${esc(data.generated_at?new Date(data.generated_at).toLocaleString():'just now')} · The Daily Prophet sees all</footer>
+      </article>
+    </div>`;
+}
 
   // ═══════════════════════════════════
 // PAGE: NOTIFICATIONS
@@ -746,7 +830,6 @@ async function checkNotifications() {
       }
     }
   } catch(e) {}
-}
 }
 function navigateSearch(q){qs('#search-results').style.display='none';qs('#search-input').value='';navigate('search',q);}
 
