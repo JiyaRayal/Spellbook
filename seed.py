@@ -71,7 +71,146 @@ WIZARDS = [
         "bio": "Hufflepuff Triwizard Champion. Fair play and loyalty above all.",
         "house": "Hufflepuff",
         "password": "accio123456",
+
     },
+    {
+    "username": "fred_weasley",
+    "email": "fred@hogwarts.edu",
+    "display_name": "Fred Weasley",
+    "bio": "Gryffindor prankster and co-founder of Weasleys' Wizard Wheezes. Mischief is my specialty.",
+    "house": "Gryffindor",
+    "password": "mischief123"
+    },
+    {
+    "username": "george_weasley",
+    "email": "george@hogwarts.edu",
+    "display_name": "George Weasley",
+    "bio": "Gryffindor prankster and magical inventor. Keeping Hogwarts entertained one joke at a time.",
+    "house": "Gryffindor",
+    "password": "wheezes123"
+    },
+    {
+    "username": "ginny_weasley",
+    "email": "ginny@hogwarts.edu",
+    "display_name": "Ginny Weasley",
+    "bio": "Gryffindor Quidditch player with a fierce spirit. Brave, determined, and never backing down.",
+    "house": "Gryffindor",
+    "password": "batbogey123"
+    },
+    {
+    "username": "seamus_finnigan",
+    "email": "seamus@hogwarts.edu",
+    "display_name": "Seamus Finnigan",
+    "bio": "Gryffindor student with a talent for experimental magic and spectacular explosions.",
+    "house": "Gryffindor",
+    "password": "boom123456"
+    },
+    {
+    "username": "dean_thomas",
+    "email": "dean@hogwarts.edu",
+    "display_name": "Dean Thomas",
+    "bio": "Gryffindor student and talented artist. Always ready to stand beside his friends.",
+    "house": "Gryffindor",
+    "password": "dean123456"
+    },
+    {
+    "username": "parvati_patil",
+    "email": "parvati@hogwarts.edu",
+    "display_name": "Parvati Patil",
+    "bio": "Gryffindor student with a love for Divination, magical adventures, and Hogwarts gossip.",
+    "house": "Gryffindor",
+    "password": "parvati123"
+    },
+    {
+    "username": "cho_chang",
+    "email": "cho@hogwarts.edu",
+    "display_name": "Cho Chang",
+    "bio": "Ravenclaw Seeker with a sharp mind and a passion for Quidditch.",
+    "house": "Ravenclaw",
+    "password": "cho123456"
+    },
+    {
+    "username": "padma_patil",
+    "email": "padma@hogwarts.edu",
+    "display_name": "Padma Patil",
+    "bio": "Ravenclaw prefect known for intelligence, discipline, and a thoughtful approach to magic.",
+    "house": "Ravenclaw",
+    "password": "padma123456"
+    },
+    {
+    "username": "terry_boot",
+    "email": "terry@hogwarts.edu",
+    "display_name": "Terry Boot",
+    "bio": "Ravenclaw student fascinated by magical theory, clever spells, and discovering how things work.",
+    "house": "Ravenclaw",
+    "password": "terry123456"
+    },
+    {
+    "username": "millicent_bulstrode",
+    "email": "millicent@hogwarts.edu",
+    "display_name": "Millicent Bulstrode",
+    "bio": "Slytherin student known for her tough attitude and determination.",
+    "house": "Slytherin",
+    "password": "millicent123"
+    },
+    {
+    "username": "pansy_parkinson",
+    "email": "pansy@hogwarts.edu",
+    "display_name": "Pansy Parkinson",
+    "bio": "Slytherin student with a sharp tongue, strong opinions, and unwavering house pride.",
+    "house": "Slytherin",
+    "password": "pansy123456"
+    },
+    {
+    "username": "blaise_zabini",
+    "email": "blaise@hogwarts.edu",
+    "display_name": "Blaise Zabini",
+    "bio": "Slytherin student with a cool attitude and an appreciation for ambition and cleverness.",
+    "house": "Slytherin",
+    "password": "blaise123456"
+    },
+    {
+    "username": "theodore_nott",
+    "email": "theodore@hogwarts.edu",
+    "display_name": "Theodore Nott",
+    "bio": "Quiet Slytherin student with a sharp mind and a talent for observing what others miss.",
+    "house": "Slytherin",
+    "password": "theodore123"
+    },
+    {
+    "username": "ernie_macmillan",
+    "email": "ernie@hogwarts.edu",
+    "display_name": "Ernie Macmillan",
+    "bio": "Hufflepuff prefect who values loyalty, responsibility, and doing what is right.",
+    "house": "Hufflepuff",
+    "password": "ernie123456"
+    },
+    {
+    "username": "hannah_abbott",
+    "email": "hannah@hogwarts.edu",
+    "display_name": "Hannah Abbott",
+    "bio": "Hufflepuff student who values friendship, kindness, and standing up for what matters.",
+    "house": "Hufflepuff",
+    "password": "hannah123456"
+    },
+    {
+    "username": "susan_bones",
+    "email": "susan@hogwarts.edu",
+    "display_name": "Susan Bones",
+    "bio": "Hufflepuff student with a strong sense of justice and a brave heart.",
+    "house": "Hufflepuff",
+    "password": "susan123456"
+    },
+    {
+    "username": "justin_finch_fletchley",
+    "email": "justin@hogwarts.edu",
+    "display_name": "Justin Finch-Fletchley",
+    "bio": "Hufflepuff student with a curious mind and a friendly personality.",
+    "house": "Hufflepuff",
+    "password": "justin123456"
+    }
+
+    
 ]
 
 SPELLS_DATA = [
@@ -139,10 +278,27 @@ REPLIES_DATA = [
 def seed():
     db = SessionLocal()
     try:
-        # Check if already seeded
-        if db.query(User).first():
-            print("⚠️  Database already has data. Skipping seed.")
-            print("   To re-seed, drop all tables and run again.")
+        # Add newly defined accounts without duplicating existing seed data.
+        existing_usernames = {
+            username for (username,) in db.query(User.username).all()
+        }
+        missing_wizards = [
+            wizard for wizard in WIZARDS
+            if wizard["username"] not in existing_usernames
+        ]
+        if existing_usernames:
+            for wizard_data in missing_wizards:
+                db.add(User(
+                    username=wizard_data["username"],
+                    email=wizard_data["email"],
+                    display_name=wizard_data["display_name"],
+                    bio=wizard_data["bio"],
+                    house=wizard_data["house"],
+                    hashed_password=get_password_hash(wizard_data["password"]),
+                ))
+            db.commit()
+            print(f"✅ Added {len(missing_wizards)} missing wizard accounts")
+            print("   Existing spells and relationships were left unchanged.")
             return
 
         print("🌱 Seeding Spellbook database with Hogwarts wizards...")

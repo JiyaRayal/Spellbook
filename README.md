@@ -1,8 +1,8 @@
 # ⚡ Spellbook — The Wizard's Social Network
 
-> *A Harry Potter-themed Twitter clone built with FastAPI, SQLAlchemy, and vanilla JavaScript*
+> *A Harry Potter-themed Twitter clone built with FastAPI, PostgreSQL, and vanilla JavaScript*
 
-![Python](https://img.shields.io/badge/Python-3.9+-blue) ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-green) ![Database](https://img.shields.io/badge/Database-SQLite%20%7C%20PostgreSQL-blue) ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-cyan)
+![Python](https://img.shields.io/badge/Python-3.9+-blue) ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-green) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-blue) ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-cyan)
 
 ---
 
@@ -30,10 +30,10 @@
 ## 🛠️ Tech Stack
 
 - **Backend**: Python 3.9+ with FastAPI
-- **Database**: SQLite by default for local development, or PostgreSQL via SQLAlchemy ORM
+- **Database**: PostgreSQL via SQLAlchemy ORM
 - **Auth**: JWT tokens (python-jose + passlib/bcrypt)
 - **Frontend**: Vanilla HTML/JS + Tailwind CSS (CDN) + Jinja2
-- **Migrations**: Alembic (when migration files are present)
+- **Migrations**: Alembic
 - **File uploads**: Python multipart + aiofiles
 
 ---
@@ -43,8 +43,7 @@
 ### Prerequisites
 
 - Python 3.9+
-- SQLite (included with Python) for the default local setup
-- PostgreSQL 14+ is supported as an alternative database
+- PostgreSQL 14+ running locally
 - Git
 
 ### 1. Clone / set up the project
@@ -54,11 +53,7 @@ git clone <your-repo> spellbook
 cd spellbook
 ```
 
-### 2. Configure the database
-
-The default configuration uses the local SQLite database `spellbook.db`, so no database server setup is required.
-
-To use PostgreSQL instead, create a database and set `DATABASE_URL` accordingly:
+### 2. Create the database
 
 ```sql
 -- In psql or pgAdmin:
@@ -71,13 +66,9 @@ CREATE DATABASE spellbook_db;
 cp .env.example .env
 ```
 
-Edit `.env` only if you need to override the local defaults:
+Edit `.env`:
 ```env
-# Default local configuration:
-DATABASE_URL=sqlite:///./spellbook.db
-
-# PostgreSQL alternative (replace the SQLite value above):
-# DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/spellbook_db
+DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/spellbook_db
 SECRET_KEY=some-very-long-random-secret-string-here
 ```
 
