@@ -7,10 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
 
 from backend.core.config import settings
-from backend.core.database import engine, Base
+from backend.core.database import engine, Base, ensure_schema
 from backend.core.middleware import RequestLoggingMiddleware, RateLimitMiddleware
 from backend.models import user, spell  # noqa
-from backend.routers import auth, users, spells, health , duels , notification , prophet
+from backend.routers import auth, users, spells, health , duels , notification , prophet, map
 
 # Logging
 logging.basicConfig(
@@ -23,6 +23,7 @@ logger = logging.getLogger("spellbook")
 # DB tables
 try:
     Base.metadata.create_all(bind=engine)
+    ensure_schema()
     logger.info("Database tables ready")
 except Exception as exc:
     logger.warning("Could not create tables: %s", exc)
@@ -62,6 +63,7 @@ app.include_router(spells.router)
 app.include_router(duels.router)
 app.include_router(notification.router)
 app.include_router(prophet.router)
+app.include_router(map.router)
 
 # Serve frontend HTML directly — no Jinja2 templating needed
 @app.get("/{full_path:path}", response_class=HTMLResponse, include_in_schema=False)

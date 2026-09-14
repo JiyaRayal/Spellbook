@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Query, Request
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc
 from typing import Optional, List
@@ -11,6 +11,7 @@ from backend.models.spell import Spell, Charm, Reply
 from backend.schemas.spell import SpellOut, ReplyOut, ReplyCreate, FeedResponse
 from backend.schemas.user import UserPublic
 from backend.core.config import settings
+from backend.core.location import locate_request
 
 router = APIRouter(prefix="/api/spells", tags=["Spells"])
 
@@ -121,6 +122,7 @@ def calculate_score(spell, current_user):
 
 @router.post("/cast", response_model=SpellOut, status_code=201)
 async def cast(
+    request: Request,
     content: str = Form(...),
     echo_of_id: Optional[int] = Form(None),
     image: Optional[UploadFile] = File(None),
@@ -140,7 +142,11 @@ async def cast(
         with open(os.path.join(d, fn), "wb") as f:
             shutil.copyfileobj(image.file, f)
         img_url = f"/static/uploads/spells/{fn}"
-    s = Spell(content=content.strip(), image_url=img_url, author_id=cu.id, echo_of_id=echo_of_id)
+    location = None if cu.mischief_managed else await locate_request(request)
+    s = Spell(
+        content=content.strip(), image_url=img_url, author_id=cu.id,
+        echo_of_id=echo_of_id, **(location or {})
+    )
     db.add(s); db.commit(); db.refresh(s)
     return _fmt(_q(db).filter(Spell.id == s.id).first(), cu)
 

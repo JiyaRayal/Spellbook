@@ -20,6 +20,7 @@ class User(Base):
     profile_picture = Column(String(500), nullable=True)
     house = Column(String(50), nullable=True)
     is_active = Column(Boolean, default=True)
+    mischief_managed = Column(Boolean, default=False, nullable=False)
     # ── Duel Stats 
     duel_wins   = Column(Integer, default=0)
     duel_losses = Column(Integer, default=0)

@@ -6,6 +6,8 @@
   <title>Spellbook — The Wizard's Network</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Lora:ital,wght@0,400;0,500;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <style>
     :root{--gold:#c9a84c;--gold-dark:#8b6914;--parchment:#f5e6c8;--parchment-dark:#e8d5a3;--ink:#1a0a00;--crimson:#8b0000;--emerald:#0d4f3c;--bg-dark:#0d0a05;--bg-card:#1a1208;--bg-card2:#221a08;--border:#3d2c0a;--muted:#8a7550;--amber:#b45309}
     *{box-sizing:border-box;margin:0;padding:0}
@@ -18,6 +20,11 @@
     .prophet-ink{color:var(--ink)}.prophet-rule{height:1px;background:rgba(26,10,0,.35);margin:.75rem 0}.prophet-section{border-top:3px double rgba(26,10,0,.55);padding-top:.75rem}
     .prophet-section-title{font-family:'Cinzel',serif;color:var(--crimson);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;font-weight:900}
     .prophet-stat{border:1px solid rgba(139,105,20,.45);background:rgba(255,255,255,.2);padding:.65rem;text-align:center}
+    #marauders-map{height:min(68vh,620px);min-height:360px;border:1px solid var(--gold-dark);border-radius:6px;background:#16241f;z-index:1}
+    .leaflet-container{font-family:'Lora',Georgia,serif;background:#17251f}
+    .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--parchment);color:var(--ink)}
+    .leaflet-popup-content{margin:.8rem;line-height:1.45}.map-marker{background:var(--crimson);border:2px solid var(--gold);border-radius:50%;box-shadow:0 0 0 0 rgba(201,168,76,.8);animation:mapPulse 1.8s infinite}
+    @keyframes mapPulse{70%{box-shadow:0 0 0 12px rgba(201,168,76,0)}100%{box-shadow:0 0 0 0 rgba(201,168,76,0)}}
     @media(max-width:600px){.prophet-paper{margin:0 -.25rem}.prophet-paper:before{inset:6px}.prophet-headline{font-size:1.7rem!important}.prophet-grid{grid-template-columns:1fr!important}.prophet-stats{grid-template-columns:repeat(2,1fr)!important}}
     .card-hover{transition:all .2s ease}.card-hover:hover{border-color:var(--gold-dark);box-shadow:0 6px 30px rgba(0,0,0,.6),0 0 15px rgba(201,168,76,.1)}
     .btn-gold{background:linear-gradient(135deg,var(--gold-dark) 0%,var(--gold) 50%,var(--gold-dark) 100%);color:var(--ink);font-family:'Cinzel',serif;font-weight:600;letter-spacing:.05em;border:none;cursor:pointer;transition:all .2s;padding:.55rem 1.4rem;border-radius:4px;font-size:.85rem}
@@ -359,12 +366,17 @@
     
     <div class="space-y-4">
       <div>
+        <label class="font-cinzel block text-xs tracking-widest text-[var(--muted)] mb-2">YOUR DUEL SPELL</label>
+        <select id="challenge-spell-select" class="input-magic w-full" style="background:#0d0a05"></select>
+      </div>
+      <div>
         <label class="font-cinzel block text-xs tracking-widest text-[var(--muted)] mb-2">DEBATE TOPIC</label>
         <input id="challenge-topic" class="input-magic w-full" placeholder="Write the debate statement..."/>
       </div>
       <div>
         <label class="font-cinzel block text-xs tracking-widest text-[var(--muted)] mb-2">CHALLENGE WIZARD</label>
-        <input id="challenge-defender" class="input-magic w-full" placeholder="@username"/>
+        <input id="challenge-defender" class="input-magic w-full" placeholder="@username" oninput="searchChallengeWizards(this.value)" autocomplete="off"/>
+        <div id="challenge-wizard-results" class="card" style="display:none;margin-top:4px;max-height:160px;overflow-y:auto"></div>
       </div>
     </div>
 
@@ -407,7 +419,7 @@
 </div>
 
 <div class="font-cinzel" style="color:var(--muted);font-size:.7rem;letter-spacing:.1em;margin-bottom:.5rem">
-  — YA EXISTING SPELL CHOOSE KARO —
+  — Choose the Existing Spell —
 </div>
       <div id="accept-spells-list" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:.5rem">
         <div style="text-align:center;padding:1rem"><div class="spinner" style="margin:0 auto"></div></div>
@@ -443,6 +455,7 @@
         <span id="pending-badge" style="display:none;background:var(--crimson);color:white;border-radius:50%;width:18px;height:18px;font-size:.65rem;margin-left:auto;align-items:center;justify-content:center">!</span>
       </div>
       <div class="nav-link" id="nav-prophet" onclick="navigate('prophet')"><span>📰</span> Daily Prophet</div>
+      <div class="nav-link" id="nav-map" onclick="navigate('map')"><span>🗺️</span> Marauder's Map</div>
       <div class="nav-link" id="nav-profile"  onclick="navigate('profile')"  style="display:none"><span>👤</span> My Profile</div>
       <div class="nav-link" id="nav-settings" onclick="navigate('settings')" style="display:none"><span>⚙</span> Settings</div>
     </nav>
@@ -517,6 +530,7 @@
   <button onclick="openCastModal()"    style="display:flex;flex-direction:column;align-items:center;color:var(--gold);background:none;border:none;cursor:pointer"><span style="font-size:1.8rem">✨</span></button>
   <button id="mob-duels-btn" onclick="navigate('duels')" style="display:none;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">⚔️</span>Duels</button>
   <button onclick="navigate('prophet')" style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">📰</span>Prophet</button>
+  <button onclick="navigate('map')" style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">🗺️</span>Map</button>
   <button id="mob-login-btn"   onclick="showAuth()"          style="display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">🔐</span>Login</button>
   <button id="mob-profile-btn" onclick="navigate('profile')" style="display:none;flex-direction:column;align-items:center;gap:2px;color:var(--muted);background:none;border:none;cursor:pointer;font-size:.7rem"><span style="font-size:1.2rem">👤</span>Me</button>
 </nav>
@@ -679,7 +693,7 @@ if (in_) {
 function navigate(page,param=null){
   if(page==='duels'&&!currentUser){showAuth();return;}
   currentPage=page;
-  ['home','explore','search','duels','prophet','profile','settings'].forEach(p=>{const el=qs('#nav-'+p);if(el)el.classList.toggle('active',p===page);});
+  ['home','explore','search','duels','prophet','map','profile','settings'].forEach(p=>{const el=qs('#nav-'+p);if(el)el.classList.toggle('active',p===page);});
   qs('#page-container').innerHTML='<div style="display:flex;justify-content:center;padding:4rem"><div class="spinner"></div></div>';
   if(page==='home')renderFeed();
   else if(page==='explore')renderExplore();
@@ -690,6 +704,7 @@ function navigate(page,param=null){
   else if(page==='spell')renderSpellDetail(param);
   else if(page==='settings')renderSettings();
   else if(page==='prophet')renderProphetPage();
+  else if(page==='map')renderMaraudersMapPage();
   else if (page === 'notifications') renderNotificationsPage();
   else renderFeed();
 }
@@ -764,6 +779,62 @@ function renderProphetEdition(data) {
         <footer style="position:relative;text-align:center;border-top:1px solid rgba(26,10,0,.3);margin-top:1.5rem;padding-top:.75rem;font-size:.68rem;font-style:italic">Generated ${esc(data.generated_at?new Date(data.generated_at).toLocaleString():'just now')} · The Daily Prophet sees all</footer>
       </article>
     </div>`;
+}
+
+// ═══════════════════════════════════
+// PAGE: MARAUDER'S MAP
+// ═══════════════════════════════════
+let maraudersMap = null;
+
+async function renderMaraudersMapPage() {
+  const c=qs('#page-container');
+  c.innerHTML='<div style="display:flex;justify-content:center;padding:4rem"><div class="spinner"></div></div>';
+  try {
+    if (typeof L === 'undefined') throw new Error('The map enchantment could not be loaded');
+    const [activity, privacy] = await Promise.all([
+      api('GET','/api/map/activity'),
+      currentUser ? api('GET','/api/map/privacy') : Promise.resolve({mischief_managed:false})
+    ]);
+    c.innerHTML=`
+      <div class="fade-in">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding:.75rem 0 1rem;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:1rem">
+          <div><div class="font-cinzel" style="color:var(--gold);font-size:1.25rem;font-weight:700">🗺️ Marauder's Map</div><div style="color:var(--muted);font-size:.78rem;font-style:italic">I solemnly swear that I am up to no good</div></div>
+          ${currentUser ? `<label class="flex items-center gap-2" style="color:var(--parchment);font-size:.8rem;cursor:pointer"><input id="mischief-toggle" type="checkbox" ${privacy.mischief_managed?'checked':''} onchange="toggleMischiefManaged(this)"/> Mischief Managed</label>` : '<button onclick="showAuth()" class="btn-ghost" style="font-size:.78rem">Login to manage privacy</button>'}
+        </div>
+        <div class="card p-3 mb-3" style="color:var(--muted);font-size:.8rem;line-height:1.5">Recent spell activity appears as moving traces. Only approximate city-level coordinates are stored, and no IP address is saved.</div>
+        <div id="marauders-map"></div>
+        <div id="map-empty-state" style="display:${activity.activities.length?'none':'block'}">${emptyState('✨','No traceable spells yet','New casts from public locations will appear here.')}</div>
+      </div>`;
+    renderMaraudersMarkers(activity.activities);
+  } catch(e) {
+    c.innerHTML=`<div class="fade-in">${errState('The Marauder\'s Map could not be unfolded: '+e.message)}<div class="text-center"><button onclick="renderMaraudersMapPage()" class="btn-gold">Try Again 🪄</button></div></div>`;
+  }
+}
+
+function renderMaraudersMarkers(activities) {
+  if (maraudersMap) maraudersMap.remove();
+  maraudersMap=L.map('marauders-map',{worldCopyJump:true,scrollWheelZoom:true}).setView([20,0],2);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap contributors',maxZoom:18}).addTo(maraudersMap);
+  const markerIcon=L.divIcon({className:'map-marker',iconSize:[14,14],iconAnchor:[7,7]});
+  activities.forEach(activity=>{
+    const place=[activity.city,activity.country].filter(Boolean).join(', ')||'Unknown location';
+    const content=`<strong>@${esc(activity.username)} cast</strong> "${esc(activity.content)}" ⚡<br><small>${esc(timeAgo(activity.created_at))} ago · ${esc(place)}</small>`;
+    L.marker([activity.latitude,activity.longitude],{icon:markerIcon}).addTo(maraudersMap).bindPopup(content);
+  });
+  setTimeout(()=>maraudersMap.invalidateSize(),0);
+}
+
+async function toggleMischiefManaged(toggle) {
+  toggle.disabled=true;
+  try {
+    await api('PUT','/api/map/privacy',{enabled:toggle.checked});
+    notify(toggle.checked?'Mischief managed. Your traces are hidden.':'Mischief resumes. Future public casts may appear.','info');
+    await renderMaraudersMapPage();
+  } catch(e) {
+    toggle.checked=!toggle.checked;
+    toggle.disabled=false;
+    notify(e.message||'Privacy charm failed','error');
+  }
 }
 
   // ═══════════════════════════════════
@@ -968,7 +1039,7 @@ async function searchTabSwitch(tab){
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem;flex-shrink:0">
             <div style="font-size:.75rem;color:var(--muted)"><strong style="color:var(--gold)">${u.followers_count}</strong> followers</div>
-            ${currentUser&&currentUser.username!==u.username?'<button id="srbtn-'+u.id+'" onclick="quickFollow(\''+u.username+'\',\'srbtn-'+u.id+'\')" class="'+(u.is_following?'btn-ghost':'btn-gold')+'" style="font-size:.8rem">'+(u.is_following?'Unfollow':'Follow')+'</button>':''}
+            ${currentUser&&currentUser.username!==u.username?'<div style="display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end"><button id="srbtn-'+u.id+'" onclick="quickFollow(\''+u.username+'\',\'srbtn-'+u.id+'\')" class="'+(u.is_following?'btn-ghost':'btn-gold')+'" style="font-size:.8rem">'+(u.is_following?'Unfollow':'Follow')+'</button><button onclick="openWizardChallengeModal(\''+u.username+'\')" class="btn-ghost" style="font-size:.8rem">⚔️ Challenge</button></div>':(!currentUser?'<button onclick="showAuth()" class="btn-ghost" style="font-size:.8rem">⚔️ Challenge</button>':'')}
           </div>
         </div>`;
       }).join('')+'</div>';
@@ -1174,38 +1245,53 @@ function pendingDuelCard(d) {
     </div>
   </div>`;
 }
-async function renderDuelsPage(){
+function sentPendingDuelCard(d) {
+  return `<div class="card p-4 fade-in" style="border-color:var(--gold-dark)">
+    <div class="font-cinzel" style="color:var(--gold);font-size:.8rem;font-weight:700;margin-bottom:.35rem">🕊️ CHALLENGE SENT</div>
+    <div style="font-size:.85rem">Waiting for <span style="color:var(--gold);font-weight:700">${esc(d.defender.display_name||d.defender.username)}</span> to answer.</div>
+    <div style="font-size:.78rem;color:var(--muted);margin-top:.35rem">Topic: "${esc(d.topic)}"</div>
+  </div>`;
+}
+async function renderDuelsPage(initialTab='pending'){
   const c=qs('#page-container');
   try{
-    const [active,pending,completed]=await Promise.all([
+    const [active,pendingReceived,pendingSent,completed]=await Promise.all([
       api('GET','/api/duels/active'),
       currentUser?api('GET','/api/duels/my/pending'):Promise.resolve([]),
+      currentUser?api('GET','/api/duels/my/pending/sent'):Promise.resolve([]),
       api('GET','/api/duels/completed')
     ]);
     c.innerHTML=`
       <div class="fade-in">
         <div style="display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;margin-bottom:1rem;border-bottom:1px solid var(--border)">
           <div class="font-cinzel" style="color:var(--gold);font-size:1.2rem;font-weight:700">⚔️ Spell Duels</div>
-          <div style="font-size:.78rem;color:var(--muted);font-style:italic">Community votes decide the winner</div>
+          <button onclick="openWizardChallengeModal('')" class="btn-gold" style="font-size:.8rem">⚔️ Challenge a Wizard</button>
         </div>
-        ${pending.length?`<div style="margin-bottom:1.5rem"><div class="font-cinzel" style="color:var(--crimson);font-size:.85rem;font-weight:700;margin-bottom:.75rem">🔔 Pending Challenges (${pending.length})</div><div class="space-y-3">${pending.map(d=>pendingDuelCard(d)).join('')}</div></div>`:''}
         <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+          <button id="dtab-pending"  onclick="duelTabSwitch('pending')"  class="btn-gold" style="font-size:.8rem">🕊️ Pending (${pendingReceived.length+pendingSent.length})</button>
           <button id="dtab-active"    onclick="duelTabSwitch('active')"    class="btn-gold"  style="font-size:.8rem">⚔️ Active (${active.length})</button>
           <button id="dtab-completed" onclick="duelTabSwitch('completed')" class="btn-ghost" style="font-size:.8rem">🏆 Completed (${completed.length})</button>
         </div>
         <div id="duels-tab-content" class="space-y-4">
-          ${!active.length?emptyState('⚔️','No active duels','Challenge someone from their spell!','explore','Find Spells'):active.map(d=>duelCard(d)).join('')}
+          ${renderPendingDuelContent(pendingReceived,pendingSent)}
         </div>
       </div>`;
-    window._activeDuels=active;window._completedDuels=completed;
+    window._activeDuels=active;window._completedDuels=completed;window._pendingReceived=pendingReceived;window._pendingSent=pendingSent;
+    if(initialTab==='active') duelTabSwitch('active');
   }catch(e){c.innerHTML=errState(e.message);}
 }
+function renderPendingDuelContent(received,sent){
+  if(!received.length&&!sent.length)return emptyState('🕊️','No pending challenges','Challenge a wizard to begin a duel.');
+  return `<div class="space-y-3">${received.length?`<div class="font-cinzel" style="color:var(--crimson);font-size:.82rem">🔔 Received (${received.length})</div>${received.map(d=>pendingDuelCard(d)).join('')}`:''}${sent.length?`<div class="font-cinzel" style="color:var(--gold);font-size:.82rem;margin-top:1rem">🕊️ Sent (${sent.length})</div>${sent.map(d=>sentPendingDuelCard(d)).join('')}`:''}</div>`;
+}
 function duelTabSwitch(tab){
+  qs('#dtab-pending').className=tab==='pending'?'btn-gold':'btn-ghost';
   qs('#dtab-active').className=tab==='active'?'btn-gold':'btn-ghost';
   qs('#dtab-completed').className=tab==='completed'?'btn-gold':'btn-ghost';
-  qs('#dtab-active').style.fontSize=qs('#dtab-completed').style.fontSize='.8rem';
-  const duels=tab==='active'?(window._activeDuels||[]):(window._completedDuels||[]);
+  qs('#dtab-pending').style.fontSize=qs('#dtab-active').style.fontSize=qs('#dtab-completed').style.fontSize='.8rem';
   const content=qs('#duels-tab-content');if(!content)return;
+  if(tab==='pending'){content.innerHTML=renderPendingDuelContent(window._pendingReceived||[],window._pendingSent||[]);return;}
+  const duels=tab==='active'?(window._activeDuels||[]):(window._completedDuels||[]);
   if(!duels.length){content.innerHTML=emptyState(tab==='active'?'⚔️':'🏆',tab==='active'?'No active duels':'No completed duels','');return;}
   content.innerHTML=duels.map(d=>duelCard(d)).join('');
 }
@@ -1258,6 +1344,9 @@ function duelCard(d){
         <span>${100-chalPct}% AGAINST</span>
       </div>
     </div>` : ''}
+
+    ${isCompleted ? `<div style="text-align:center;margin:1rem 0;padding:.7rem;border:1px solid var(--gold-dark);background:rgba(201,168,76,.08);color:var(--gold);font-family:Cinzel,serif;font-weight:700">🏆 Winner: ${d.winner ? esc(d.winner.display_name||d.winner.username) : 'Draw'} · ${d.challenger_votes} FOR / ${d.defender_votes} AGAINST</div>` : ''}
+    ${currentUser && d.status==='active' && (currentUser.id===d.challenger.id || currentUser.id===d.defender.id) ? `<div style="text-align:center;color:var(--muted);font-size:.78rem;margin-top:.75rem">Your duel spell has been submitted. Community voting decides the winner.</div>` : ''}
 
     ${timeLeft ? `<div style="text-center text-sm text-amber-400">${timeLeft}</div>` : ''}
 
@@ -1315,8 +1404,8 @@ ${(user.duel_wins||0) > 0
                   ${isMe ? 
                     `<button onclick="navigate('settings')" class="btn-ghost" style="font-size:.85rem">Edit Profile</button>` : 
                     currentUser ? 
-                    `<button id="flw-${user.id}" onclick="toggleFollow('${user.username}',${user.id})" class="${user.is_following?'btn-ghost':'btn-gold'}" style="font-size:.85rem">${user.is_following?'Unfollow':'Follow'}</button>` : 
-                    `<button onclick="showAuth()" class="btn-gold">Follow</button>`
+                    `<div style="display:flex;gap:.5rem;flex-wrap:wrap"><button id="flw-${user.id}" onclick="toggleFollow('${user.username}',${user.id})" class="${user.is_following?'btn-ghost':'btn-gold'}" style="font-size:.85rem">${user.is_following?'Unfollow':'Follow'}</button><button onclick="openWizardChallengeModal('${user.username}')" class="btn-ghost" style="font-size:.85rem">⚔️ Challenge</button></div>` : 
+                    `<div style="display:flex;gap:.5rem;flex-wrap:wrap"><button onclick="showAuth()" class="btn-gold">Follow</button><button onclick="openWizardChallengeModal('${user.username}')" class="btn-ghost">⚔️ Challenge</button></div>`
                   }
                 </div>
               </div>
@@ -1634,6 +1723,8 @@ async function checkPendingDuels(){
 function openChallengeModal(spellId, content){
   if(!currentUser) return showAuth();
   challengeSpellId = spellId;
+  qs('#challenge-spell-select').innerHTML = '<option value="'+spellId+'">Use this spell</option>';
+  qs('#challenge-spell-select').value = String(spellId);
   qs('#challenge-spell-preview').textContent = '"' + content + '"';
   qs('#challenge-defender').value = '';
   qs('#challenge-topic').value = content.substring(0, 120); // pre-fill topic
@@ -1641,20 +1732,65 @@ function openChallengeModal(spellId, content){
   setTimeout(() => qs('#challenge-defender').focus(), 100);
 }
 
+async function openWizardChallengeModal(username){
+  if(!currentUser) return showAuth();
+  challengeSpellId = null;
+  qs('#challenge-defender').value = username;
+  qs('#challenge-topic').value = '';
+  qs('#challenge-spell-preview').textContent = 'Choose one of your spells to begin the challenge.';
+  qs('#challenge-spell-select').innerHTML = '<option>Loading your spells...</option>';
+  qs('#challenge-modal').style.display = 'flex';
+  try {
+    const data = await api('GET','/api/spells/user/'+currentUser.username+'?page=1&per_page=20');
+    if(!data.spells.length){
+      qs('#challenge-spell-select').innerHTML = '<option value="">Cast a spell before challenging</option>';
+      return;
+    }
+    qs('#challenge-spell-select').innerHTML = data.spells.map(s=>'<option value="'+s.id+'">'+esc(s.content.substring(0,90))+'</option>').join('');
+    challengeSpellId = data.spells[0].id;
+    qs('#challenge-spell-select').onchange = function(){ challengeSpellId = Number(this.value); };
+    qs('#challenge-topic').value = data.spells[0].content.substring(0,120);
+  } catch(e) {
+    qs('#challenge-spell-select').innerHTML = '<option value="">Could not load your spells</option>';
+    notify(e.message,'error');
+  }
+}
+
+async function searchChallengeWizards(value){
+  const results=qs('#challenge-wizard-results'), query=value.trim().replace('@','');
+  if(!results)return;
+  if(query.length<2){results.style.display='none';return;}
+  try{
+    const users=await api('GET','/api/users/search/wizards?q='+encodeURIComponent(query));
+    const choices=users.filter(u=>u.username!==currentUser.username).slice(0,6);
+    results.innerHTML=choices.length?choices.map(u=>`<div style="padding:.55rem .7rem;cursor:pointer;color:var(--parchment);border-bottom:1px solid var(--border)" onclick="selectChallengeWizard('${u.username}')"><strong style="color:var(--gold)">${esc(u.display_name||u.username)}</strong> <span style="color:var(--muted)">@${esc(u.username)}</span></div>`).join(''):'<div style="padding:.6rem;color:var(--muted);font-size:.8rem">No wizards found</div>';
+    results.style.display='block';
+  }catch(e){results.style.display='none';}
+}
+
+function selectChallengeWizard(username){
+  qs('#challenge-defender').value=username;
+  qs('#challenge-wizard-results').style.display='none';
+}
+
 async function submitChallenge(){
   const defender = qs('#challenge-defender').value.trim().replace('@','');
   const topic = qs('#challenge-topic').value.trim();
   if(!defender) return notify('Enter wizard username!', 'error');
   if(!topic) return notify('Enter debate topic!', 'error');
+  const selectedSpellId = Number(qs('#challenge-spell-select').value || challengeSpellId);
+  if(!selectedSpellId) return notify('Choose one of your spells first!', 'error');
 
   try{
-    await api('POST', '/api/duels/challenge/' + challengeSpellId, {
+    await api('POST', '/api/duels/challenge/' + selectedSpellId, {
       defender_username: defender,
       topic: topic,
       challenger_stance: "FOR"
     });
     closeModal('challenge-modal');
+    qs('#challenge-wizard-results').style.display='none';
     notify('Duel Challenge sent to @' + defender + '! ⚔️', 'success');
+    challengeSpellId = null;
     if(currentPage === 'duels') renderDuelsPage();
   } catch(e){ notify(e.message, 'error'); }
 }
@@ -1778,7 +1914,7 @@ async function submitAccept() {
     acceptSelectedSpellId = null;
     isNewSpellMode = false;
     notify('Duel accepted! Community voting starts now! ⚔️', 'success');
-    if (currentPage === 'duels') renderDuelsPage();
+    if (currentPage === 'duels') renderDuelsPage('active');
 
   } catch(e) { notify(e.message || 'Failed', 'error'); }
 }

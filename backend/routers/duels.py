@@ -15,6 +15,12 @@ from backend.schemas.user import UserPublic
 from backend.schemas.spell import SpellOut
 
 router = APIRouter(prefix="/api/duels", tags=["Duels"])
+VOTING_PERIOD = timedelta(hours=72)
+
+def as_utc(value):
+    if value is None:
+        return None
+    return value.replace(tzinfo=timezone.utc) if value.tzinfo is None else value.astimezone(timezone.utc)
 
 # ── HELPERS ───────────────────────────────────────────
 def fmt_user(u):
@@ -105,14 +111,18 @@ def award_champion_badge(db, winner: User, loser: User):
     db.commit()
 
 def check_and_complete_duels(db):
-    """Expired duels complete karo automatically"""
+    """Complete active duels only after their persisted UTC deadline."""
     now = datetime.now(timezone.utc)
-    active_duels = db.query(Duel).filter(
-        Duel.status == "active",
-        Duel.ends_at <= now
-    ).all()
-
+    active_duels = db.query(Duel).filter(Duel.status == "active").all()
+    expired_duels = []
     for duel in active_duels:
+        if duel.ends_at is None:
+            continue
+        deadline = as_utc(duel.ends_at)
+        if now >= deadline:
+            expired_duels.append(duel)
+
+    for duel in expired_duels:
         challenger_v = sum(1 for v in duel.votes if v.voted_for == "challenger")
         defender_v   = sum(1 for v in duel.votes if v.voted_for == "defender")
 
@@ -165,7 +175,7 @@ def check_and_complete_duels(db):
 
          
 
-    if active_duels:
+    if expired_duels:
         db.commit()
 
 # ── ROUTES ────────────────────────────────────────────
@@ -255,7 +265,7 @@ async def accept(
 
     duel.defender_spell_id = data.defender_spell_id
     duel.status            = "active"
-    duel.ends_at           = datetime.now(timezone.utc) + timedelta(minutes=5)
+    duel.ends_at           = datetime.now(timezone.utc) + VOTING_PERIOD
     db.commit()
 
     # informing challenger that challange has been accepted
@@ -298,6 +308,9 @@ async def vote(
     if duel.status != "active": raise HTTPException(400, "Duel active nahi hai")
     if cu.id in [duel.challenger_id, duel.defender_id]:
         raise HTTPException(400, "Tum duel mein ho — vote nahi kar sakte!")
+    if duel.ends_at and as_utc(duel.ends_at) <= datetime.now(timezone.utc):
+        check_and_complete_duels(db)
+        raise HTTPException(400, "Voting period has ended")
 
     existing = db.query(DuelVote).filter(
         DuelVote.duel_id  == duel_id,
@@ -332,6 +345,18 @@ async def my_pending(
     ).order_by(desc(Duel.created_at)).all()
     return [fmt_duel(load_duel(db, d.id), cu) for d in duels]
 
+@router.get("/my/pending/sent", response_model=List[DuelOut])
+async def my_sent_pending(
+    db: Session = Depends(get_db),
+    cu: User = Depends(get_current_user)
+):
+    """Pending challenges sent by the current user."""
+    duels = db.query(Duel).filter(
+        Duel.challenger_id == cu.id,
+        Duel.status == "pending"
+    ).order_by(desc(Duel.created_at)).all()
+    return [fmt_duel(load_duel(db, d.id), cu) for d in duels]
+
 @router.get("/active", response_model=List[DuelOut])
 async def active_duels(
     db: Session = Depends(get_db),
@@ -349,6 +374,7 @@ async def completed_duels(
     db: Session = Depends(get_db),
     cu=Depends(get_optional_user)
 ):
+    check_and_complete_duels(db)
     duels = db.query(Duel).filter(
         Duel.status == "completed"
     ).order_by(desc(Duel.created_at)).limit(20).all()
@@ -404,8 +430,9 @@ async def force_complete(
         raise HTTPException(403, "Sirf duel participants complete kar sakte hain")
     if duel.status != "active":
         raise HTTPException(400, "Duel active nahi hai")
+    if not duel.ends_at or as_utc(duel.ends_at) > datetime.now(timezone.utc):
+        raise HTTPException(400, "Voting period is still active")
 
-    
     duel.ends_at = datetime.now(timezone.utc)
     db.commit()
     check_and_complete_duels(db)
